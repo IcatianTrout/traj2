@@ -1,10 +1,11 @@
 Package: traj2
-Title: What the Package Does (One Line, Title Case)
+Title: Clustering of functional data based on measures of change
 Version: 0.0.0.9000
-Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+Authors@R: c(person("Marie-Pierre", "Sylvestre", role = "aut"),
+              person("Laurence", "Boulanger", role = c("aut","cre"), email="laurence.boulanger@umontreal.ca"),
+              person("Gillis Delmas", "Tchouangue Dinkou", role = "ctb"),
+              person("Dan", "Vatnik", role = "ctb"))
+Description: Implements the three-step procedure proposed by Leffondree et al. (2004) to identify clusters of individual longitudinal trajectories. The procedure involves (1) calculating a number of measures of change capturing various features of the trajectories; (2) using a PCA-based dimensionality reduction algorithm to select a subset of measures and (3) using the K-means clustering algorithm to identify clusters of trajectories.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
