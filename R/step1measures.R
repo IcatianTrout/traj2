@@ -20,7 +20,7 @@
 #'\item  Overall change relative to initial value\cr
 #'\item  Overall change relative to functional mean (ratio of measure 5 to measure 5)\cr
 #'\item  Slope of the linear model\cr
-#'\item  R²: Proportion of variance explained by the linear model\cr
+#'\item  \eqn{R^2}: Proportion of variance explained by the linear model\cr
 #'\item  Maximum value of the speed\cr
 #'\item  Functional SD of the speed\cr
 #'\item  Mean absolute speed\cr
