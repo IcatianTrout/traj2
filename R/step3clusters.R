@@ -13,7 +13,6 @@
 #' @param SE.factor to be passed to the \code{SE.factor} argument of \code{\link[psych]{clusGap}}.
 #' @return An object of class \code{trajClusters}; a list containing the result of the clustering as well as curated forms of the data and time matrices. 
 #' @import cluster
-#''@author Marie-Pierre Sylvestre, Laurence Boulanger
 #'
 #' @examples
 #' \dontrun{

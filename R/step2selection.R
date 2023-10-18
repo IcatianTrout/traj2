@@ -19,8 +19,6 @@
 #' 
 #' The function \code{\link[psych]{principal}} from the \code{psych} package is used for PCA.
 #'
-#' @author Marie-Pierre Sylvestre, Laurence Boulanger
-#'
 #' @references 
 #' Leffondre K, Abrahamowicz M, Regeasse A, Hawker GA, Badley EM, McCusker J, Belzile E. Statistical measures were proposed for identifying longitudinal patterns of change in quantitative health indicators. J Clin Epidemiol. 2004 Oct;57(10):1049-62. doi: 10.1016/j.jclinepi.2004.02.012. PMID: 15528056.
 #' Nishiyama T, Improved Chebyshev inequality: new probability bounds with known supremum of PDF, arXiv:1808.10770v2 [stat.ME] https://doi.org/10.48550/arXiv.1808.10770
