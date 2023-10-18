@@ -9,9 +9,11 @@ step2selection(trajMeasures, num.select = NULL, discard = NULL, select = NULL)
 \arguments{
 \item{trajMeasures}{Object of class \code{trajMeasures} as returned by \code{step1mesures}.}
 
-\item{num.select}{Defaults to NULL. If a numeric positive integer is supplied, then in step 2 of the algorithm, the first \code{num.select} factors are kept, regardless of their variance.}
+\item{num.select}{Defaults to NULL. If a numeric positive integer is supplied, then in step 2 of the algorithm, the \code{num.select} factors with the highest variance are kept and the others are dropped.}
 
 \item{discard}{Defaults to NULL. If a numeric vector of positive integers is supplied, then the corresponding measures will be dropped. See \code{\link[traj]{step1measures}} for the list of measures.}
+
+\item{select}{Can be NULL or a numeric vector corresponding to the numerical identifier of measures present in \code{trajMeasures}. If a numeric vector is supplied, then four-steps selection algorithm described above is bypassed and the corresponding measures are selected instead.}
 }
 \value{
 An object of class \code{trajSelection}; a list containing the values of the selected measures, the loadings of the rotated factors on each measure as well as curated forms of the data and time matrices.
@@ -22,7 +24,7 @@ Applies the following dimension reduction algorithm to the measures computed by 
 \item Use principal component analysis (PCA) on the measures;
 \item Drop the factors whose variance is less than that of any individual measure;
 \item Performs a varimax rotation on the remaining factors;
-\item For each rotated factor, select the measure that has the highest correlation (also called factor loading) with it.
+\item For each rotated factor, select the measure that has the highest correlation (aka factor loading) with it.
 }
 }
 \details{

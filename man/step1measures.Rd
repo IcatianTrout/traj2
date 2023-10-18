@@ -13,7 +13,7 @@ step1measures(Data, Time = NULL, ID = FALSE, measures = 1:23, midpoint = NULL)
 
 \item{ID}{Logical. Set to \code{TRUE} if the first column of \code{Data} and \code{Time} corresponds to an \code{ID} variable. Defaults to \code{FALSE}.}
 
-\item{measures}{A numerical vector containing the measures to compute. The default, c(1:23), leaves out the measures which require specifying a midpoint.}
+\item{measures}{A numerical vector containing the numerical identifiers of the measures to compute (see "Details" section below). The default, c(1:23), leaves out the measures which require specifying a midpoint.}
 
 \item{midpoint}{Specifies which column of \code{Time} to use as the midpoint in measures 24-26. Can be an integer, an integer vector (of length the number of rows in \code{Time}) or NULL (the default). If NULL, the midpoint for a given function is taken to be the time closest to the median.}
 }
@@ -26,7 +26,7 @@ An object of class \code{trajMeasures}; a list containing the values of the meas
 \details{
 Each function must have a minimum of 3 observations otherwise it will be omitted from the analysis.
 
-The 26 measures are:
+The 26 measures (and their numerical identifiers) are:
 \enumerate{
 \item  Range\cr
 \item  Mean of the function\cr

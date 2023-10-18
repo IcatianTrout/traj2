@@ -3,13 +3,13 @@
 #' @param Data A matrix or data frame in which each row contains the (ordered) observations of a given function.
 #' @param Time Either NULL or a vector or a matrix (or data frame) of the same dimension as \code{Data}. If a vector, matrix or data frame is supplied, it is assumed that the entries correspond to the values of the arguments at which the functions in \code{Data} are observed. When set to \code{NULL} (the default), the observations are assumed equidistant.
 #' @param ID Logical. Set to \code{TRUE} if the first column of \code{Data} and \code{Time} corresponds to an \code{ID} variable. Defaults to \code{FALSE}.
-#' @param measures A numerical vector containing the measures to compute. The default, c(1:23), leaves out the measures which require specifying a midpoint. 
+#' @param measures A numerical vector containing the numerical identifiers of the measures to compute (see "Details" section below). The default, c(1:23), leaves out the measures which require specifying a midpoint. 
 #' @param midpoint Specifies which column of \code{Time} to use as the midpoint in measures 24-26. Can be an integer, an integer vector (of length the number of rows in \code{Time}) or NULL (the default). If NULL, the midpoint for a given function is taken to be the time closest to the median.
 #' @return An object of class \code{trajMeasures}; a list containing the values of the measures, a table of outliers which have been imputed, as well as a curated form of the \code{Data} and \code{Time} arguments.
 #' @details 
 #' Each function must have a minimum of 3 observations otherwise it will be omitted from the analysis. 
 #'
-#'The 26 measures are:
+#'The 26 measures (and their numerical identifiers) are:
 #'\enumerate{
 #'\item  Range\cr
 #'\item  Mean of the function\cr
@@ -39,14 +39,7 @@
 #'\item  Later change relative to overall change\cr
 #'}
 #'
-#'@importFrom 
-#'stat complete.cases
-#'stat coefficients
-#'stat lm
-#'stat median
-#'stat sd
-#'stat density
-#
+#'@importFrom stats complete.cases coefficients lm median sd density
 #'
 #' @references 
 #' Leffondre K, Abrahamowicz M, Regeasse A, Hawker GA, Badley EM, McCusker J, Belzile E. Statistical measures were proposed for identifying longitudinal patterns of change in quantitative health indicators. J Clin Epidemiol. 2004 Oct;57(10):1049-62. doi: 10.1016/j.jclinepi.2004.02.012. PMID: 15528056.
