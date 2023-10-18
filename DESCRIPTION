@@ -1,7 +1,7 @@
 Package: traj2
 Title: Clustering of functional data based on measures of change
 Version: 0.0.0.9000
-Authors@R: c(person("Marie-Pierre", "Sylvestre", role = "aut"),
+Authors@R: c(person("Marie-Pierre", "Sylvestre", role = "aut", email="marie-pierre.sylvestre@umontreal.ca"),
               person("Laurence", "Boulanger", role = c("aut","cre"), email="laurence.boulanger@umontreal.ca"),
               person("Gillis Delmas", "Tchouangue Dinkou", role = "ctb"),
               person("Dan", "Vatnik", role = "ctb"))
@@ -13,3 +13,9 @@ RoxygenNote: 7.1.2
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
+Imports: 
+    cluster,
+    psych
+Depends: 
+    R (>= 2.10)
+LazyData: true
