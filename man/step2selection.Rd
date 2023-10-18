@@ -55,6 +55,3 @@ Nishiyama T, Improved Chebyshev inequality: new probability bounds with known su
 \code{\link[psych]{principal}}
 \code{\link[traj]{step1measures}}
 }
-\author{
-Marie-Pierre Sylvestre, Laurence Boulanger
-}

@@ -70,6 +70,3 @@ identical(s1$measures,s2$measures)
 \references{
 Leffondre K, Abrahamowicz M, Regeasse A, Hawker GA, Badley EM, McCusker J, Belzile E. Statistical measures were proposed for identifying longitudinal patterns of change in quantitative health indicators. J Clin Epidemiol. 2004 Oct;57(10):1049-62. doi: 10.1016/j.jclinepi.2004.02.012. PMID: 15528056.
 }
-\author{
-Marie-Pierre Sylvestre, Laurence Boulanger
-}

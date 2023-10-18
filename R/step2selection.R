@@ -10,7 +10,12 @@
 #' @param num.select Defaults to NULL. If a numeric positive integer is supplied, then in step 2 of the algorithm, the first \code{num.select} factors are kept, regardless of their variance.
 #' @param discard Defaults to NULL. If a numeric vector of positive integers is supplied, then the corresponding measures will be dropped. See \code{\link[traj]{step1measures}} for the list of measures.
 #' @return An object of class \code{trajSelection}; a list containing the values of the selected measures, the loadings of the rotated factors on each measure as well as curated forms of the data and time matrices. 
-#' @importFrom psych principal
+#' @importFrom 
+#' psych principal
+#' stat cor
+#' 
+#' 
+#' 
 #' @details 
 #' Prior to using PCA on the data, if a measure is perfectly or almost perfectly correlated (corr. >0.98) with some other measure that appears 
 #' before it in the list, then it is discarded. Likewise, if a measure is constant, it is discarded. Quotient measures which turn out to be of the form 0/0 are set to 1.

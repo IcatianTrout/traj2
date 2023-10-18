@@ -39,6 +39,15 @@
 #'\item  Later change relative to overall change\cr
 #'}
 #'
+#'@importFrom 
+#'stat complete.cases
+#'stat coefficients
+#'stat lm
+#'stat median
+#'stat sd
+#'stat density
+#
+#'
 #' @references 
 #' Leffondre K, Abrahamowicz M, Regeasse A, Hawker GA, Badley EM, McCusker J, Belzile E. Statistical measures were proposed for identifying longitudinal patterns of change in quantitative health indicators. J Clin Epidemiol. 2004 Oct;57(10):1049-62. doi: 10.1016/j.jclinepi.2004.02.012. PMID: 15528056.
 #'
