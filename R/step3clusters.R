@@ -2,15 +2,15 @@
 #' @description Classifies the functions by applying the K-mean clustering algorithm to the measures selected by \code{step2selection}.
 #' @param trajSelection Object of class \code{trajSelection} as returned by \code{step2selection}. 
 #' @param forced.measures Either NULL or a numerical vectors corresponding to the measures used for clustering. If NULL, the measures selected by \code{step2selection} are used.
-#' @param nstart to be passed to the nstart argument of \code{\link[psych]{kmeans}}. 
-#' @param iter.max to be passed to the iter.max argument of \code{\link[psych]{kmeans}}. 
+#' @param nstart to be passed to the nstart argument of \code{\link[stats]{kmeans}}. 
+#' @param iter.max to be passed to the iter.max argument of \code{\link[stats]{kmeans}}. 
 #' @param nclusters either NULL or the number of clusters to form. If NULL, the number of clusters to form will be determined using the GAP criterion as implemented in the \code{\link[psych]{clusGap}} function.
-#' @param K.max to be passed to the \code{K.max} argument of \code{\link[psych]{clusGap}}.
-#' @param B to be passed to the \code{SE.factor} argument of \code{\link[psych]{clusGap}}.
-#' @param d.power to be passed to the \code{B} argument of \code{\link[psych]{clusGap}}.
+#' @param K.max to be passed to the \code{K.max} argument of \code{\link[cluster]{clusGap}}.
+#' @param B to be passed to the \code{SE.factor} argument of \code{\link[cluster]{clusGap}}.
+#' @param d.power to be passed to the \code{B} argument of \code{\link[cluster]{clusGap}}.
 #' @param spaceH0 to be passed to the \code{spaceH0} argument of \code{\link[psych]{clusGap}}.
-#' @param method to be passed to the \code{method} argument of \code{\link[psych]{clusGap}}.
-#' @param SE.factor to be passed to the \code{SE.factor} argument of \code{\link[psych]{clusGap}}.
+#' @param method to be passed to the \code{method} argument of \code{\link[cluster]{clusGap}}.
+#' @param SE.factor to be passed to the \code{SE.factor} argument of \code{\link[cluster]{clusGap}}.
 #' @return An object of class \code{trajClusters}; a list containing the result of the clustering as well as curated forms of the data and time matrices. 
 #' @import cluster
 #' 
@@ -33,6 +33,8 @@
 #'
 #'}
 #'
+#'@seealso 
+#' \code{\link[traj]{step2selection}}
 #'
 #' @rdname step3clusters
 #'

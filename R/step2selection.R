@@ -1,12 +1,12 @@
 #' @title Select a Subset of the Measures Using Factor Analysis
-#' @description Applies the following dimension reduction algorithm to the measures computed by \code{step1mesures}:
+#' @description Applies the following dimension reduction algorithm to the measures computed by \code{\link[traj]{step1measures}}:
 #' \enumerate{
 #'   \item Use principal component analysis (PCA) on the measures; 
 #'   \item Drop the factors whose variance is less than that of any individual measure;
 #'   \item Performs a varimax rotation on the remaining factors;
 #'   \item For each rotated factor, select the measure that has the highest correlation (aka factor loading) with it.
 #' }
-#' @param trajMeasures Object of class \code{trajMeasures} as returned by \code{step1mesures}. 
+#' @param trajMeasures Object of class \code{trajMeasures} as returned by \code{\link[traj]{step1measures}}. 
 #' @param num.select Defaults to NULL. If a numeric positive integer is supplied, then in step 2 of the algorithm, the \code{num.select} factors with the highest variance are kept and the others are dropped.
 #' @param discard Defaults to NULL. If a numeric vector of positive integers is supplied, then the corresponding measures will be dropped. See \code{\link[traj]{step1measures}} for the list of measures.
 #' @param select Can be NULL or a numeric vector corresponding to the numerical identifier of measures present in \code{trajMeasures}. If a numeric vector is supplied, then four-steps selection algorithm described above is bypassed and the corresponding measures are selected instead.
@@ -18,13 +18,13 @@
 #' Prior to using PCA on the data, if a measure is perfectly or almost perfectly correlated (corr. >0.98) with some other measure that appears 
 #' before it in the list, then it is discarded. Likewise, if a measure is constant, it is discarded. Quotient measures which turn out to be of the form 0/0 are set to 1.
 #' 
-#' By virtue of being quotients, some measures (m4, m7, m8, m15-m17, m21-m26) can turn out extremely large or even infinite (division by 0). Because the K-means algorithm is sensitive to outliers, it is necessary to act on them. Therefor, if a measure takes values beyond the 0.3% probability threshold as computed from Nishiyama's improved Chebychev bound, those values are imputed to the 0.3% probability threshold. 
+#' By virtue of being quotients, some measures (4, 7, 8, 15-17, 21-26) can turn out extremely large or even infinite (division by 0). Because the K-means algorithm is sensitive to outliers, it is necessary to act on them. Therefor, if a measure takes values beyond the 0.3% probability threshold as computed from Nishiyama's improved Chebychev bound, those values are imputed to the 0.3% probability threshold. 
 #' 
 #' The function \code{\link[psych]{principal}} from the \code{psych} package is used for PCA.
 #'
 #' @references 
 #' Leffondre K, Abrahamowicz M, Regeasse A, Hawker GA, Badley EM, McCusker J, Belzile E. Statistical measures were proposed for identifying longitudinal patterns of change in quantitative health indicators. J Clin Epidemiol. 2004 Oct;57(10):1049-62. doi: 10.1016/j.jclinepi.2004.02.012. PMID: 15528056.
-#' Nishiyama T, Improved Chebyshev inequality: new probability bounds with known supremum of PDF, arXiv:1808.10770v2 [stat.ME] https://doi.org/10.48550/arXiv.1808.10770
+#' Nishiyama T, Improved Chebyshev inequality: new probability bounds with known supremum of PDF, arXiv:1808.10770v2 stat.ME https://doi.org/10.48550/arXiv.1808.10770
 #'
 #' @examples
 #' \dontrun{
