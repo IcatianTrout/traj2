@@ -4,12 +4,23 @@
 \name{traj2-package}
 \alias{traj2}
 \alias{traj2-package}
-\title{traj2: What the Package Does (One Line, Title Case)}
+\title{traj2: Clustering of functional data based on measures of change}
 \description{
-What the package does (one paragraph).
+Implements the three-step procedure proposed by Leffondree et al. (2004) to identify clusters of individual longitudinal trajectories. The procedure involves (1) calculating a number of measures of change capturing various features of the trajectories; (2) using a PCA-based dimensionality reduction algorithm to select a subset of measures and (3) using the K-means clustering algorithm to identify clusters of trajectories.
 }
 \author{
-\strong{Maintainer}: First Last \email{first.last@example.com} (\href{https://orcid.org/YOUR-ORCID-ID}{ORCID})
+\strong{Maintainer}: Laurence Boulanger \email{laurence.boulanger@umontreal.ca}
+
+Authors:
+\itemize{
+  \item Marie-Pierre Sylvestre \email{marie-pierre.sylvestre@umontreal.ca}
+}
+
+Other contributors:
+\itemize{
+  \item Gillis Delmas Tchouangue Dinkou [contributor]
+  \item Dan Vatnik [contributor]
+}
 
 }
 \keyword{internal}

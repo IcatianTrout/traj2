@@ -5,6 +5,11 @@ Authors@R: c(person("Marie-Pierre", "Sylvestre", role = "aut", email="marie-pier
               person("Laurence", "Boulanger", role = c("aut","cre"), email="laurence.boulanger@umontreal.ca"),
               person("Gillis Delmas", "Tchouangue Dinkou", role = "ctb"),
               person("Dan", "Vatnik", role = "ctb"))
+Author: Marie-Pierre Sylvestre [aut],
+  Laurence Boulanger [aut, cre],
+  Gillis Delmas Tchouangue Dinkou [ctb],
+  Dan Vatnik [ctb]
+Maintainer: Laurence Boulanger <laurence.boulanger@umontreal.ca>
 Description: Implements the three-step procedure proposed by Leffondree et al. (2004) to identify clusters of individual longitudinal trajectories. The procedure involves (1) calculating a number of measures of change capturing various features of the trajectories; (2) using a PCA-based dimensionality reduction algorithm to select a subset of measures and (3) using the K-means clustering algorithm to identify clusters of trajectories.
 License: MIT + file LICENSE
 Encoding: UTF-8
@@ -18,4 +23,3 @@ Imports:
     psych
 Depends: 
     R (>= 2.10)
-LazyData: true
