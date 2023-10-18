@@ -7,7 +7,7 @@
 step2selection(trajMeasures, num.select = NULL, discard = NULL, select = NULL)
 }
 \arguments{
-\item{trajMeasures}{Object of class \code{trajMeasures} as returned by \code{step1mesures}.}
+\item{trajMeasures}{Object of class \code{trajMeasures} as returned by \code{\link[traj]{step1measures}}.}
 
 \item{num.select}{Defaults to NULL. If a numeric positive integer is supplied, then in step 2 of the algorithm, the \code{num.select} factors with the highest variance are kept and the others are dropped.}
 
@@ -19,7 +19,7 @@ step2selection(trajMeasures, num.select = NULL, discard = NULL, select = NULL)
 An object of class \code{trajSelection}; a list containing the values of the selected measures, the loadings of the rotated factors on each measure as well as curated forms of the data and time matrices.
 }
 \description{
-Applies the following dimension reduction algorithm to the measures computed by \code{step1mesures}:
+Applies the following dimension reduction algorithm to the measures computed by \code{\link[traj]{step1measures}}:
 \enumerate{
 \item Use principal component analysis (PCA) on the measures;
 \item Drop the factors whose variance is less than that of any individual measure;
@@ -31,7 +31,7 @@ Applies the following dimension reduction algorithm to the measures computed by 
 Prior to using PCA on the data, if a measure is perfectly or almost perfectly correlated (corr. >0.98) with some other measure that appears
 before it in the list, then it is discarded. Likewise, if a measure is constant, it is discarded. Quotient measures which turn out to be of the form 0/0 are set to 1.
 
-By virtue of being quotients, some measures (m4, m7, m8, m15-m17, m21-m26) can turn out extremely large or even infinite (division by 0). Because the K-means algorithm is sensitive to outliers, it is necessary to act on them. Therefor, if a measure takes values beyond the 0.3\% probability threshold as computed from Nishiyama's improved Chebychev bound, those values are imputed to the 0.3\% probability threshold.
+By virtue of being quotients, some measures (4, 7, 8, 15-17, 21-26) can turn out extremely large or even infinite (division by 0). Because the K-means algorithm is sensitive to outliers, it is necessary to act on them. Therefor, if a measure takes values beyond the 0.3\% probability threshold as computed from Nishiyama's improved Chebychev bound, those values are imputed to the 0.3\% probability threshold.
 
 The function \code{\link[psych]{principal}} from the \code{psych} package is used for PCA.
 }
@@ -51,9 +51,9 @@ s2 = step2selection(m,select=c(10,12,8,4))
 }
 \references{
 Leffondre K, Abrahamowicz M, Regeasse A, Hawker GA, Badley EM, McCusker J, Belzile E. Statistical measures were proposed for identifying longitudinal patterns of change in quantitative health indicators. J Clin Epidemiol. 2004 Oct;57(10):1049-62. doi: 10.1016/j.jclinepi.2004.02.012. PMID: 15528056.
-Nishiyama T, Improved Chebyshev inequality: new probability bounds with known supremum of PDF, arXiv:1808.10770v2 \link{stat.ME} https://doi.org/10.48550/arXiv.1808.10770
+Nishiyama T, Improved Chebyshev inequality: new probability bounds with known supremum of PDF, arXiv:1808.10770v2 stat.ME https://doi.org/10.48550/arXiv.1808.10770
 }
 \seealso{
 \code{\link[psych]{principal}}
-\code{\link[traj]{step1measures}}
+\code{\link[traj2]{step1measures}}
 }

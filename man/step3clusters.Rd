@@ -23,23 +23,23 @@ step3clusters(
 
 \item{forced.measures}{Either NULL or a numerical vectors corresponding to the measures used for clustering. If NULL, the measures selected by \code{step2selection} are used.}
 
-\item{nstart}{to be passed to the nstart argument of \code{\link[psych]{kmeans}}.}
+\item{nstart}{to be passed to the nstart argument of \code{\link[stats]{kmeans}}.}
 
-\item{iter.max}{to be passed to the iter.max argument of \code{\link[psych]{kmeans}}.}
+\item{iter.max}{to be passed to the iter.max argument of \code{\link[stats]{kmeans}}.}
 
-\item{nclusters}{either NULL or the number of clusters to form. If NULL, the number of clusters to form will be determined using the GAP criterion as implemented in the \code{\link[psych]{clusGap}} function.}
+\item{nclusters}{either NULL or the number of clusters to form. If NULL, the number of clusters to form will be determined using the GAP criterion as implemented in the \code{\link[cluster]{clusGap}} function.}
 
-\item{K.max}{to be passed to the \code{K.max} argument of \code{\link[psych]{clusGap}}.}
+\item{K.max}{to be passed to the \code{K.max} argument of \code{\link[cluster]{clusGap}}.}
 
-\item{B}{to be passed to the \code{SE.factor} argument of \code{\link[psych]{clusGap}}.}
+\item{B}{to be passed to the \code{SE.factor} argument of \code{\link[cluster]{clusGap}}.}
 
-\item{d.power}{to be passed to the \code{B} argument of \code{\link[psych]{clusGap}}.}
+\item{d.power}{to be passed to the \code{B} argument of \code{\link[cluster]{clusGap}}.}
 
-\item{spaceH0}{to be passed to the \code{spaceH0} argument of \code{\link[psych]{clusGap}}.}
+\item{spaceH0}{to be passed to the \code{spaceH0} argument of \code{\link[cluster]{clusGap}}.}
 
-\item{method}{to be passed to the \code{method} argument of \code{\link[psych]{clusGap}}.}
+\item{method}{to be passed to the \code{method} argument of \code{\link[cluster]{clusGap}}.}
 
-\item{SE.factor}{to be passed to the \code{SE.factor} argument of \code{\link[psych]{clusGap}}.}
+\item{SE.factor}{to be passed to the \code{SE.factor} argument of \code{\link[cluster]{clusGap}}.}
 }
 \value{
 An object of class \code{trajClusters}; a list containing the result of the clustering as well as curated forms of the data and time matrices.
@@ -64,5 +64,7 @@ groups5Cl <- step3(s2,nclusters=5)$partition
 
 }
 
-
+}
+\seealso{
+\code{\link[traj2]{step2selection}}
 }

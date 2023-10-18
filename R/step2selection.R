@@ -4,7 +4,8 @@
 #'   \item Use principal component analysis (PCA) on the measures; 
 #'   \item Drop the factors whose variance is less than that of any individual measure;
 #'   \item Performs a varimax rotation on the remaining factors;
-#'   \item For each rotated factor, select the measure that has the highest correlation (aka factor loading) with it.
+#'   \item For each rotated factor, select the measure that has the highest correlation (aka factor loading) with it and that hasn't yet been selected;
+#'   \item Drop the remaining measures.
 #' }
 #' @param trajMeasures Object of class \code{trajMeasures} as returned by \code{\link[traj]{step1measures}}. 
 #' @param num.select Defaults to NULL. If a numeric positive integer is supplied, then in step 2 of the algorithm, the \code{num.select} factors with the highest variance are kept and the others are dropped.
@@ -41,7 +42,7 @@
 #' 
 #' @seealso 
 #' \code{\link[psych]{principal}} 
-#' \code{\link[traj]{step1measures}}
+#' \code{\link[traj2]{step1measures}}
 #' 
 #' @rdname step2selection
 #' 
