@@ -1,4 +1,4 @@
-fct.mean <- function(x,y){ #two vectors of the same length
+FctMean <- function(x,y){ #two vectors of the same length
   if(!length(y)==length(x)){stop("y and x must be vectors of the same length.")}
   
   m <- length(x)

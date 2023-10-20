@@ -1,4 +1,4 @@
-check.correlation <- function(output, verbose = TRUE, is.return = FALSE, tresh=0.98){
+CheckCorrelation <- function(output, verbose = TRUE, is.return = FALSE, tresh=0.98){
   cor.mat = cor(output)
   
   mes.names = names(output)

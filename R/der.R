@@ -1,4 +1,4 @@
-der <- function(x,y){
+Der <- function(x,y){
   if(!length(y)==length(x)){stop("y and x must be vectors of the same length.")}
   
   m <- length(x)
