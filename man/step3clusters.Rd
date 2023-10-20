@@ -2,7 +2,7 @@
 % Please edit documentation in R/Step3Clusters.R
 \name{Step3Clusters}
 \alias{Step3Clusters}
-\title{Classify the Functions Based on the Selected Measures.}
+\title{Classify the Longitudinal Data Based on the Selected Measures.}
 \usage{
 Step3Clusters(
   trajSelection,
@@ -59,7 +59,7 @@ An object of class \code{trajClusters}; a list containing the result
 of the clustering as well as curated forms of the data and time matrices.
 }
 \description{
-Classifies the functions by applying the K-mean clustering
+Classifies the trajectories by applying the K-mean clustering
 algorithm to the measures selected by \code{Step2Selection}.
 }
 \examples{

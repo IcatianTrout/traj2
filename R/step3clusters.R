@@ -1,5 +1,5 @@
-#'@title Classify the Functions Based on the Selected Measures.
-#'@description Classifies the functions by applying the K-mean clustering
+#'@title Classify the Longitudinal Data Based on the Selected Measures.
+#'@description Classifies the trajectories by applying the K-mean clustering
 #'  algorithm to the measures selected by \code{Step2Selection}.
 #'@param trajSelection Object of class \code{trajSelection} as returned by
 #'  \code{Step2Selection}.
@@ -74,7 +74,7 @@ Step3Clusters <- function (trajSelection, forced.measures = NULL, nstart = 50, i
     stop("The number 'nclusters' of requested clusters cannot exceed the number of trajectories.")
   }
   if (is.null(nclusters)) {
-    ## The clusGap function takes as argument for a function that will perform
+    ## The clusGap function takes as argument a function that will perform
     ## the clustering but it does not allow us to set the arguments of that
     ## function, so we have to do so beforehand by defining a new function:
     kmeans.nstart <- function (x, k) {
