@@ -157,3 +157,15 @@ Step2Selection <- function (trajMeasures, num.select = NULL, discard = NULL, sel
   return(trajSelection)
   
 }
+
+
+#'@export
+print.trajSelection <- function(trajSelection){
+  
+}
+
+#'@export
+summary.trajSelection <- function(trajSelection){
+  
+}
+

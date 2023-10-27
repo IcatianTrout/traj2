@@ -604,3 +604,16 @@ Step1Measures <- function (Data, Time = NULL, ID = FALSE, measures = 1:23, midpo
   return(trajMeasures)
  
 }
+
+
+#'@export
+print.trajMeasures <- function(trajMeasures){
+  
+}
+
+
+#'@export
+summary.trajMeasures <- function(trajMeasures){
+  
+}
+

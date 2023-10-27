@@ -99,3 +99,21 @@ Step3Clusters <- function (trajSelection, forced.measures = NULL, nstart = 50, i
   return(trajClusters)
   
 } 
+
+
+#'@export
+print.trajCluster <- function(trajCluster){
+  
+}
+
+
+#'@export
+summary.trajCluster <- function(trajCluster){
+  
+}
+
+
+#'@export
+plot.trajCluster <- function(trajCluster){
+  
+}
