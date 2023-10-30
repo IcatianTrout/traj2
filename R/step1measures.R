@@ -33,7 +33,7 @@
 #'\item  Overall change (initial value - final value)\cr
 #'\item  Mean change per unit time\cr
 #'\item  Overall change relative to initial value\cr
-#'\item  Overall change relative to functional mean (ratio of measure 5 to measure 5)\cr
+#'\item  Overall change relative to functional mean (ratio of measure 5 to measure 2)\cr
 #'\item  Slope of the linear model\cr
 #'\item  \eqn{R^2}: Proportion of variance explained by the linear model\cr
 #'\item  Maximum value of the speed\cr
@@ -245,7 +245,7 @@ Step1Measures <- function (Data, Time = NULL, ID = FALSE, measures = 1:23, midpo
             stop("'midpoint' does not have the correct format.")
         }
     } 
-    # Check to see if the midpoints are all greater than 1 but lesser than the number of observations
+    # Check to see if the midpoints are all greater than 1 but less than the number of observations
     for (i in 1:nrow(data)) {
       v <- time[i, ][!is.na(time[i, ])] 
       if (mid.position[i] <= 1) {
@@ -254,6 +254,8 @@ Step1Measures <- function (Data, Time = NULL, ID = FALSE, measures = 1:23, midpo
         stop(paste("Error in 'midpoint' for subject ", i, "; 'midpoint' must be less than the number of observations.", sep = ""))
       }
     }
+  } else{
+    mid.position <- NULL
   }
   
   #################################################################################u########
@@ -578,11 +580,12 @@ Step1Measures <- function (Data, Time = NULL, ID = FALSE, measures = 1:23, midpo
     }
     
     cap <- which(abs(y - mu) > k.opt * sigma)
-    outliers[cap, j] <- y[cap]
+    if (length(cap) > 0) {
+      outliers[cap, j] <- max(abs(round(y[cap], 2)), abs(signif(y[cap], 1))) 
     
-    y[cap] <- mu + sign(y[cap]) * k.opt * sigma
-    output[, j] <- y
-    
+      y[cap] <- mu + sign(y[cap]) * k.opt * sigma
+      output[, j] <- y
+    }
 
     if (length(cap) == 1) {
       warning(paste("In measure ", colnames(output)[j], ", ", length(cap), " outlier has been capped to ", max(abs(round(mu, 2)), abs(signif(mu, 1)))," ± ", max(abs(round(sigma, 2)), abs(signif(sigma, 1))), " * ", k.opt, " = ", max(abs(round(mu - sigma * k.opt, 2)), abs(signif(mu - sigma * k.opt, 1))), " or ", max(abs(round(mu + sigma * k.opt, 2)), abs(signif(mu + sigma * k.opt, 1))), ".", sep = ""))
@@ -600,7 +603,7 @@ Step1Measures <- function (Data, Time = NULL, ID = FALSE, measures = 1:23, midpo
   
   ID <- IDvector
 
-  trajMeasures = structure(list(measures = output, outliers = outliers, data = cbind(ID,data), time = cbind(ID,time)), class = "trajMeasures")
+  trajMeasures = structure(list(measures = output, outliers = outliers, mid = mid.position, data = cbind(ID,data), time = cbind(ID,time)),  class = "trajMeasures")
   return(trajMeasures)
  
 }
@@ -608,12 +611,66 @@ Step1Measures <- function (Data, Time = NULL, ID = FALSE, measures = 1:23, midpo
 
 #'@export
 print.trajMeasures <- function(trajMeasures){
+  cat("Description of the measures:\n\n")
+  cat("m1: Range\n")
+  cat("m2: Mean of the function\n")
+  cat("m3: Functional standard deviation (SD)\n")
+  cat("m4: Coefficient of variation (m3/m2)\n")
+  cat("m5: Overall change (initial value - final value)\n")
+  cat("m6: Mean change per unit time\n")
+  cat("m7: Overall change relative to initial value\n")
+  cat("m8: Overall change relative to functional mean (m5/m2)\n")
+  cat("m9: Slope of the linear model\n")
+  cat("m10: Proportion of variance explained by the linear model (R squared)\n")
+  cat("m11: Maximum value of the speed\n")
+  cat("m12: Functional SD of the speed\n")
+  cat("m13: Mean absolute speed\n")
+  cat("m14: Maximum absolute speed\n")
+  cat("m15: Maximum absolute speed relative to the functional mean (m14/m2)\n")
+  cat("m16: Maximum absolute speed relative to the slope (m14/m9)\n")
+  cat("m17: Functional SD of the speed relative to the slope (m12/m9)\n")
+  cat("m18: Mean acceleration\n")
+  cat("m19: Mean absolute acceleration\n")
+  cat("m20: Maximum of the absolute acceleration\n")
+  cat("m21: Maximum of the absolute acceleration relative to the functional (m20/m2)\n")
+  cat("m22: Maximum of the absolute acceleration relative to the mean absolute speed (m20/m13)\n")
+  cat("m23: Mean absolute acceleration relative to the mean absolute speed (m19/m13)\n")
+  cat("m24: Early change relative to later change\n")
+  cat("m25: Early change relative to overall change\n")
+  cat("m26: Later change relative to overall change\n\n")
   
+  
+  cat("Measures:\n")
+  print(trajMeasures$measures)
 }
 
 
 #'@export
 summary.trajMeasures <- function(trajMeasures){
+  cat("Summary of measures:\n")
+  print(summary(trajMeasures$measures[, -c(1)]))
+  cat("\n")
+  cat("Outliers:\n")
+  print(trajMeasures$outliers) 
   
-}
+  cat("\n")
+  cat("Midpoints:\n")
+  if(is.null(trajMeasures$mid)){
+    print("No midpoids were used because measures 24-26 were not included.")
+  } else{
+      data <- trajMeasures$data[, -c(1)]
+    
+      mid.obs <- c()
+    
+      for(i in 1:nrow(data)){
+        mid.obs[i] <- trajMeasures$data[i, trajMeasures$mid[i]]
+      }
+    
+      mid.obs <- cbind(trajMeasures$data[, 1], mid.obs)
+      colnames(mid.obs) <- c("ID", "value")
+                       
+      cat("Trajectory value at midpoint:\n")
+      print(mid.obs)
+    }
+  }
 

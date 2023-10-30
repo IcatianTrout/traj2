@@ -6,7 +6,6 @@
 \usage{
 Step3Clusters(
   trajSelection,
-  forced.measures = NULL,
   nstart = 50,
   iter.max = 20,
   nclusters = NULL,
@@ -21,10 +20,6 @@ Step3Clusters(
 \arguments{
 \item{trajSelection}{Object of class \code{trajSelection} as returned by
 \code{Step2Selection}.}
-
-\item{forced.measures}{Either NULL or a numerical vectors corresponding to the
-measures used for clustering. If NULL, the measures selected by
-\code{Step2Selection} are used.}
 
 \item{nstart}{to be passed to the nstart argument of
 \code{\link[stats]{kmeans}}.}

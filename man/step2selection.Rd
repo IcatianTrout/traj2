@@ -10,29 +10,30 @@ Step2Selection(trajMeasures, num.select = NULL, discard = NULL, select = NULL)
 \item{trajMeasures}{Object of class \code{trajMeasures} as returned by
 \code{\link[traj2]{Step1Measures}}.}
 
-\item{num.select}{Defaults to NULL. If a numeric positive integer is supplied,
-then in step 2 of the algorithm, the \code{num.select} factors with the
-highest variance are kept and the others are dropped.}
+\item{num.select}{An optional  positive integer indicating the number of
+factors to keep in the second stage of the algorithm. Defaults to NULL so
+that all factors with explained variance greater than that of each of the
+measures are selected}
 
-\item{discard}{Defaults to NULL. If a numeric vector of positive integers is
-supplied, then the corresponding measures will be dropped. See
-\code{\link[traj2]{Step1Measures}} for the list of measures.}
+\item{discard}{An optional vector of positive integers corresponding to the measures to be dropped from the analysis. See
+\code{\link[traj2]{Step1Measures}} for the list of measures. Defaults to NULL.}
 
-\item{select}{Can be NULL or a numeric vector corresponding to the numerical
+\item{select}{An optional vector of positive integers corresponding to the measures to forcefully select. Default to null. If a vector is supplied, then four-steps selection algorithm described above is bypassed and the corresponding measures are selected instead.
+
+Can be NULL or a numeric vector corresponding to the numerical
 identifier of measures present in \code{trajMeasures}. If a numeric vector
 is supplied, then four-steps selection algorithm described above is bypassed
 and the corresponding measures are selected instead.}
 }
 \value{
 An object of class \code{trajSelection}; a list containing the values
-of the selected measures, the loadings of the rotated factors on each
-measure as well as curated forms of the data and time matrices.
+of the selected measures, the output of the principal component analysis as well as curated forms of the data and time matrices.
 }
 \description{
-Applies the following dimension reduction algorithm to the
-measures computed by \code{\link[traj2]{Step1Measures}}:
+This function applies the following dimension reduction algorithm
+to the measures computed by \code{\link[traj2]{Step1Measures}}:
 \enumerate{
-\item Use principal component analysis (PCA) on the measures;
+\item Use principal component analysis (PCA) to form factors (linear combinations of the measures) which summarize the variability in the measures;
 \item Drop the factors whose variance is less than that of any individual measure;
 \item Performs a varimax rotation on the remaining factors;
 \item For each rotated factor, select the measure that has the highest correlation (aka factor loading) with it and that hasn't yet been selected;
@@ -40,21 +41,8 @@ measures computed by \code{\link[traj2]{Step1Measures}}:
 }
 }
 \details{
-Prior to using PCA on the data, if a measure is perfectly or almost
-perfectly correlated (corr. >0.98) with some other measure that appears before
-it in the list, then it is discarded. Likewise, if a measure is constant, it
-is discarded. Quotient measures which turn out to be of the form 0/0 are set
-to 1.
-
-By virtue of being quotients, some measures (4, 7, 8, 15-17, 21-26) can turn
-out extremely large or even infinite (division by 0). Because the K-means
-algorithm is sensitive to outliers, it is necessary to act on them. Therefor,
-if a measure takes values beyond the 0.3\% probability threshold as computed
-from Nishiyama's improved Chebychev bound, those values are imputed to the
-0.3\% probability threshold.
-
-The function \code{\link[psych]{principal}} from the \code{psych} package is
-used for PCA.
+In the presence of highly correlated (Pearson correlation >0.98) measures, the function selects the highest-ranking measure on the list (see
+\code{\link[traj2]{Step1Measures}}) and discards the others. Because the K-means algorithm is sensitive to outliers, measures which are quotients (i.e. 4, 7, 8, 15-17, 21-26) are prevented from taking extremely large or infinite values (due to division by 0). Nishiyama's improved Chebychev bound is used to determine extreme values for each measure, corresponding to a 0.3\% probability threshold. Extreme valuesbeyond the threshold are set to the 0.3\% probability threshold. Measures corresponding to quotients which turn out to be of the form 0/0 are set to 1. PCA is applied on the remaining measures using the \code{\link[psych]{principal}} function from the \code{psych} package.
 }
 \examples{
 \dontrun{

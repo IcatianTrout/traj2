@@ -23,8 +23,7 @@
 #'  is supplied, then four-steps selection algorithm described above is bypassed
 #'  and the corresponding measures are selected instead.
 #'@return An object of class \code{trajSelection}; a list containing the values
-#'  of the selected measures, the loadings of the rotated factors on each
-#'  measure as well as curated forms of the data and time matrices.
+#'  of the selected measures, the output of the principal component analysis as well as curated forms of the data and time matrices.
 #'@importFrom psych principal
 #'@importFrom stats cor
 #'
@@ -57,6 +56,9 @@
 #'@export
 Step2Selection <- function (trajMeasures, num.select = NULL, discard = NULL, select = NULL) {
   
+  input <- list(num.select, discard, select)
+  names(input) <- c("num.select", "discard", "select")
+  
   if ( (!is.null(select)) & (!is.numeric(select))) {
     stop("Argument 'select' must be either NULL or a numerical vector.")
   }
@@ -74,9 +76,9 @@ Step2Selection <- function (trajMeasures, num.select = NULL, discard = NULL, sel
       colnames(output) <- c("ID", paste("m", select, sep = "")) 
     }
     
-    trajSelection <- structure(list(selection = output, loadings = NULL, measures = trajMeasures$measures, 
-                                   data = trajMeasures$data, time = trajMeasures$time), 
-                              class = "trajSelection")
+    trajSelection <- structure(list(selection = output, PC = NULL, RC = NULL, colinear.variables = NULL, measures = trajMeasures$measures, 
+                                    data = trajMeasures$data, time = trajMeasures$time, input = input), class = "trajSelection")
+    
   } else {
     
     if ((!is.null(discard)) & (!is.numeric(discard))) {
@@ -112,9 +114,12 @@ Step2Selection <- function (trajMeasures, num.select = NULL, discard = NULL, sel
     corr.vars <- CheckCorrelation(data, verbose = FALSE, is.return = TRUE)
     
     if (!is.null(corr.vars)) {
+      colinear.variables <- corr.vars
       corr.vars.pos <- which(names(data) %in% corr.vars[, 1])
       data <- data[, -corr.vars.pos]
       print(paste(corr.vars[, 1], "is discarded because it is perfectly or almost perfectly correlated with", corr.vars[, 2]))
+    } else{
+      colinear.variables <- NULL
     }
     
     if (num.select > ncol(data) && !is.null(num.select)) {
@@ -129,7 +134,9 @@ Step2Selection <- function (trajMeasures, num.select = NULL, discard = NULL, sel
     }
     
     if (ncol(data) > 1) {
-      principal.factors <- psych::principal(Z, rotate = "varimax", nfactors = num.select)
+      PC <- psych::principal(Z, rotate = "none", nfactors = ncol(data))
+      RC <- psych::principal(Z, rotate = "varimax", nfactors = num.select)
+      principal.factors <- RC
       
       principal.variables <- c()
       
@@ -148,10 +155,12 @@ Step2Selection <- function (trajMeasures, num.select = NULL, discard = NULL, sel
       }
     } else {
       output <- trajMeasures$measures
+      PC <- NULL
+      RC <- NULL
     }
     
-    trajSelection = structure(list(selection = output, loadings = principal.factors$loadings, measures = trajMeasures$measures, 
-                                   data = trajMeasures$data, time = trajMeasures$time), class = "trajSelection")
+    trajSelection = structure(list(selection = output, PC = PC, RC = RC, colinear.variables = colinear.variables, measures = trajMeasures$measures, 
+                                   data = trajMeasures$data, time = trajMeasures$time, input = input), class = "trajSelection")
   }
   
   return(trajSelection)
@@ -161,11 +170,35 @@ Step2Selection <- function (trajMeasures, num.select = NULL, discard = NULL, sel
 
 #'@export
 print.trajSelection <- function(trajSelection){
+  cat(paste("The selected measures are ", paste(colnames(trajSelection$selection)[-1], collapse = ', ', sep=""),".", sep=""))
+  cat("\n")
   
+  if(!is.null(trajSelection$RC)){
+    print(trajSelection$RC$loadings)
+  }
 }
 
 #'@export
 summary.trajSelection <- function(trajSelection){
   
+  if(!is.null(trajSelection$input$select)){
+    cat(paste("The measures ",paste(colnames(trajSelection$selection)[-1], collapse = ', ', sep=""), " were selected.", sep=""))
+  } else{
+      if(!is.null(trajSelection$input$num.select)){
+        if(!is.null(trajSelection$colinear.variables)){
+          dropped <- unique(trajSelection$colinear.variables[,1])
+          cat(paste("The measures ", paste(dropped,collapse=", "), " were discarded because they were perfectly or almost perfectly correlated with another measure. Upon forming the principal components from the remaining measures, the ", trajSelection$input$num.select, " factors that held the most variance were retained. Together, they explained ", round(100*sum(trajSelection$PC$values[1:(length(colnames(trajSelection$selection))-1)])/length(trajSelection$PC$values),1) ,"% of the total variance. A varimax rotation was performed to maximize the correlation with the original measures without affecting the proportion of explained variance. For each rotated factor, the measure that had the highest correlation (loading) with it was selected. As a result of this procedure, the selected measures are ", paste(colnames(trajSelection$selection)[-1], collapse = ', ', sep=""),".", sep=""))
+        } else{
+          cat(paste("Upon forming the principal components from the measures, the ", trajSelection$input$num.select, " factors that held the most variance were retained. Together, they explained ", round(100*sum(trajSelection$PC$values[1:(length(colnames(trajSelection$selection))-1)])/length(trajSelection$PC$values),1) ,"% of the total variance. A varimax rotation was performed to maximize the correlation with the original measures without affecting the proportion of explained variance. For each rotated factor, the measure that had the highest correlation (loading) with it was selected. As a result of this procedure, the selected measures are ", paste(colnames(trajSelection$selection)[-1], collapse = ', ', sep=""),".", sep=""))
+        }
+      } else{
+        if(!is.null(trajSelection$colinear.variables)){
+          dropped <- unique(trajSelection$colinear.variables[,1])
+          cat(paste("The measures ", paste(dropped,collapse=", "), " were discarded because they were perfectly or almost perfectly correlated with another measure. Upon forming the principal components from the remaining measures, ", length(colnames(trajSelection$selection))-1, " of them had a variance greater than any one of the normalized measures. Together, they explained ", round(100*sum(trajSelection$PC$values[1:(length(colnames(trajSelection$selection))-1)])/length(trajSelection$PC$values),1) ,"% of the total variance. A varimax rotation was performed to maximize the correlation with the original measures without affecting the proportion of explained variance. For each rotated factor, the measure that had the highest correlation (loading) with it was selected. As a result of this procedure, the selected measures are ", paste(colnames(trajSelection$selection)[-1], collapse = ', ', sep=""),".", sep=""))
+        } else{
+          cat(paste("Upon forming the principal components from the measures, ", length(colnames(trajSelection$selection))-1, " of them had a variance greater than any one of the normalized measures. Together, they explained ", round(100*sum(trajSelection$PC$values[1:(length(colnames(trajSelection$selection))-1)])/length(trajSelection$PC$values),1) ,"% of the total variance. A varimax rotation was performed to maximize the correlation with the original measures without affecting the proportion of explained variance. For each rotated factor, the measure that had the highest correlation (loading) with it was selected. As a result of this procedure, the selected measures are ", paste(colnames(trajSelection$selection)[-1], collapse = ', ', sep=""),".", sep=""))
+        }
+      }
+  }
 }
 
