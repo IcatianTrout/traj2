@@ -92,4 +92,5 @@ PMID: 15528056.
 
 Nishiyama T, Improved Chebyshev inequality: new probability bounds with
 known supremum of PDF, arXiv:1808.10770v2 stat.ME
+https://doi.org/10.48550/arXiv.1808.10770
 }

@@ -535,7 +535,6 @@ Step1Measures <- function (Data, Time = NULL, ID = FALSE, measures = 1:23, midpo
   ##         Cap the outliers         ##
   ######################################
   
-  outliers <- output
   outliers <- data.frame(matrix(nrow=nrow(output), ncol=ncol(output)))
   colnames(outliers) <- colnames(output)
   outliers[, 1] <- output$ID
@@ -581,25 +580,16 @@ Step1Measures <- function (Data, Time = NULL, ID = FALSE, measures = 1:23, midpo
     
     cap <- which(abs(y - mu) > k.opt * sigma)
     if (length(cap) > 0) {
-      outliers[cap, j] <- max(abs(round(y[cap], 2)), abs(signif(y[cap], 1))) 
+      outliers[cap, j] <- signif(y[cap], 3) 
     
       y[cap] <- mu + sign(y[cap]) * k.opt * sigma
       output[, j] <- y
     }
 
-    if (length(cap) == 1) {
-      warning(paste("In measure ", colnames(output)[j], ", ", length(cap), " outlier has been capped to ", max(abs(round(mu, 2)), abs(signif(mu, 1)))," ± ", max(abs(round(sigma, 2)), abs(signif(sigma, 1))), " * ", k.opt, " = ", max(abs(round(mu - sigma * k.opt, 2)), abs(signif(mu - sigma * k.opt, 1))), " or ", max(abs(round(mu + sigma * k.opt, 2)), abs(signif(mu + sigma * k.opt, 1))), ".", sep = ""))
-    }
-    if (length(cap) > 1) {
-      warning(paste("In measure ", colnames(output)[j], ", ", length(cap), " outliers have been capped to ", max(abs(round(mu, 2)), abs(signif(mu, 1))), " ± ", max(abs(round(sigma, 2)), abs(signif(sigma, 1))), " * ", k.opt, " = ", max(abs(round(mu - sigma * k.opt, 2)), abs(signif(mu - sigma * k.opt, 1)))," or ", max(abs(round(mu + sigma * k.opt, 2)), abs(signif(mu + sigma * k.opt, 1))), ".", sep = ""))
-    }
-  }
-  
   row.rm <- which(rowSums(!is.na(outliers[, -c(1)])) == 0)
   outliers <- outliers[-row.rm, ]
   col.rm <- which(colSums(!is.na(outliers)) == 0)
   outliers <- outliers[, -col.rm]
-  outliers[is.na(outliers)] <- ""
   
   ID <- IDvector
 
@@ -607,10 +597,17 @@ Step1Measures <- function (Data, Time = NULL, ID = FALSE, measures = 1:23, midpo
   return(trajMeasures)
  
 }
-
+}
 
 #'@export
 print.trajMeasures <- function(trajMeasures){
+  cat("Measures:\n")
+  print(trajMeasures$measures)
+}
+
+
+#'@export
+summary.trajMeasures <- function(trajMeasures){
   cat("Description of the measures:\n\n")
   cat("m1: Range\n")
   cat("m2: Mean of the function\n")
@@ -640,18 +637,33 @@ print.trajMeasures <- function(trajMeasures){
   cat("m26: Later change relative to overall change\n\n")
   
   
-  cat("Measures:\n")
-  print(trajMeasures$measures)
-}
-
-
-#'@export
-summary.trajMeasures <- function(trajMeasures){
+  
   cat("Summary of measures:\n")
   print(summary(trajMeasures$measures[, -c(1)]))
   cat("\n")
-  cat("Outliers:\n")
-  print(trajMeasures$outliers) 
+  
+  cat("Outliers before capping:\n")
+  outliers <- trajMeasures$outliers
+  outliers.pre <- outliers
+  outliers.pre[is.na(outliers.pre)] <- ""
+  print(outliers.pre) 
+  
+  cat("Outliers after capping:\n")
+  if (nrow(outliers)==0) {
+    print(outliers) 
+  } else{
+    outliers.post <- outliers
+    for (j in 1:nrow(outliers)) {
+      for (k in 2:ncol(outliers)) {
+        if (is.na(outliers[j, k])==FALSE) {
+          outliers.post[j, k] <- signif(trajMeasures$measures[trajMeasures$measures$ID==outliers$ID[j], colnames(outliers)[k]], 3)
+        }
+      }
+    }
+    outliers.post[is.na(outliers.post)] <- ""
+    print(outliers.post) 
+  }
+  
   
   cat("\n")
   cat("Midpoints:\n")
