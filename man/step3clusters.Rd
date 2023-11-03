@@ -50,7 +50,7 @@ implemented in the \code{\link[cluster]{clusGap}} function.}
 \code{\link[cluster]{clusGap}}.}
 }
 \value{
-An object of class \code{trajClusters}; a list containing the result
+An object of class \code{mytrajClusters}; a list containing the result
 of the clustering as well as curated forms of the data and time matrices.
 }
 \description{
