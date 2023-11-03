@@ -585,6 +585,7 @@ Step1Measures <- function (Data, Time = NULL, ID = FALSE, measures = 1:23, midpo
       y[cap] <- mu + sign(y[cap]) * k.opt * sigma
       output[, j] <- y
     }
+  }
 
   row.rm <- which(rowSums(!is.na(outliers[, -c(1)])) == 0)
   outliers <- outliers[-row.rm, ]
@@ -597,12 +598,20 @@ Step1Measures <- function (Data, Time = NULL, ID = FALSE, measures = 1:23, midpo
   return(trajMeasures)
  
 }
-}
+
 
 #'@export
 print.trajMeasures <- function(trajMeasures){
-  cat("Measures:\n")
-  print(trajMeasures$measures)
+  cat("Measures and time at midpoint (if applicable):\n")
+
+  if (is.null(trajMeasures$mid)) {
+    print(trajMeasures$measures)
+  } else{
+    measure.plus <- cbind(trajMeasures$measures$ID,trajMeasures$mid)
+    measure.plus <- cbind(measure.plus,trajMeasures$measures[, -1])
+    colnames(measure.plus)[1:2] <- c("ID", "mid time")
+    print(measure.plus)
+  }
 }
 
 
@@ -639,7 +648,31 @@ summary.trajMeasures <- function(trajMeasures){
   
   
   cat("Summary of measures:\n")
-  print(summary(trajMeasures$measures[, -c(1)]))
+  
+  Q1 <- function(x) {
+    return(quantile(x ,probs=c(.25)))
+  }
+  
+  Q2 <- function(x) {
+    return(quantile(x ,probs=c(.5)))
+  }
+  
+  Q3 <- function(x) {
+    return(quantile(x ,probs=c(.75)))
+  }
+  
+  measures.summary <- data.frame(matrix(nrow=6, ncol = ncol(trajMeasures$measures) - 1))
+  rownames(measures.summary) <- c("Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max.")
+  colnames(measures.summary) <- colnames(trajMeasures$measures)[-1]
+  
+  measures.summary[1, ] <- apply(trajMeasures$measures[, -1], 2, min)
+  measures.summary[2, ] <- apply(trajMeasures$measures[, -1], 2, Q1)
+  measures.summary[3, ] <- apply(trajMeasures$measures[, -1], 2, Q2)
+  measures.summary[4, ] <- apply(trajMeasures$measures[, -1], 2, mean)
+  measures.summary[5, ] <- apply(trajMeasures$measures[, -1], 2, Q3)
+  measures.summary[6, ] <- apply(trajMeasures$measures[, -1], 2, max)
+  
+  print(measures.summary)
   cat("\n")
   
   cat("Outliers before capping:\n")
@@ -664,25 +697,6 @@ summary.trajMeasures <- function(trajMeasures){
     print(outliers.post) 
   }
   
-  
-  cat("\n")
-  cat("Midpoints:\n")
-  if(is.null(trajMeasures$mid)){
-    print("No midpoids were used because measures 24-26 were not included.")
-  } else{
-      data <- trajMeasures$data[, -c(1)]
-    
-      mid.obs <- c()
-    
-      for(i in 1:nrow(data)){
-        mid.obs[i] <- trajMeasures$data[i, trajMeasures$mid[i]]
-      }
-    
-      mid.obs <- cbind(trajMeasures$data[, 1], mid.obs)
-      colnames(mid.obs) <- c("ID", "value")
-                       
-      cat("Trajectory value at midpoint:\n")
-      print(mid.obs)
-    }
+
   }
 
