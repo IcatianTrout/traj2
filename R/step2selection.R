@@ -1,55 +1,73 @@
 #'@title Select a Subset of the Measures Using Factor Analysis
+#'
 #'@description This function applies the following dimension reduction algorithm
-#'  to the measures computed by \code{\link[traj2]{Step1Measures}}:
+#'  to the measures computed by \code{\link[traj]{Step1Measures}}:
 #' \enumerate{
-#'   \item Use principal component analysis (PCA) to form factors (linear combinations of the measures) which summarize the variability in the measures;
-#'   \item Drop the factors whose variance is less than that of any individual measure;
+#'   \item Use principal component analysis (PCA) on the measure to form factors summarizing the variability in the measures;
+#'   \item Drop the factors whose variance is smaller than any one of the normalized measures;
 #'   \item Performs a varimax rotation on the remaining factors;
 #'   \item For each rotated factor, select the measure that has the highest correlation (aka factor loading) with it and that hasn't yet been selected;
 #'   \item Drop the remaining measures.
 #' }
-#'@param trajMeasures Object of class \code{trajMeasures} as returned by
-#'  \code{\link[traj2]{Step1Measures}}.
-#'@param num.select An optional  positive integer indicating the number of
+#' 
+#'@param trajMeasures object of class \code{trajMeasures} as returned by
+#'  \code{\link[traj]{Step1Measures}}.
+#'@param num.select an optional positive integer indicating the number of
 #'  factors to keep in the second stage of the algorithm. Defaults to NULL so
-#'  that all factors with explained variance greater than that of each of the
-#'  measures are selected
-#'@param discard An optional vector of positive integers corresponding to the measures to be dropped from the analysis. See
-#'  \code{\link[traj2]{Step1Measures}} for the list of measures. Defaults to NULL.
-#'@param select An optional vector of positive integers corresponding to the measures to forcefully select. Default to null. If a vector is supplied, then four-steps selection algorithm described above is bypassed and the corresponding measures are selected instead.
+#'  that all factors with variance greater than any one of the normalized
+#'  measures are selected.
+#'@param discard an optional vector of positive integers corresponding to the
+#'  measures to be dropped from the analysis. See
+#'  \code{\link[traj]{Step1Measures}} for the list of measures. Defaults to
+#'  NULL.
+#'@param select an optional vector of positive integers corresponding to the
+#'  measures to forcefully select. Defaults to NULL. If a vector is supplied,
+#'  the five-steps selection algorithm described above is bypassed and the
+#'  corresponding measures are selected instead.
 #'
-#'Can be NULL or a numeric vector corresponding to the numerical
-#'  identifier of measures present in \code{trajMeasures}. If a numeric vector
-#'  is supplied, then four-steps selection algorithm described above is bypassed
-#'  and the corresponding measures are selected instead.
+#'  Can be NULL or a numeric vector corresponding to the numerical identifier of
+#'  measures present in \code{trajMeasures}. If a numeric vector is supplied,
+#'  then four-steps selection algorithm described above is bypassed and the
+#'  corresponding measures are selected instead.
+#'  
 #'@return An object of class \code{trajSelection}; a list containing the values
-#'  of the selected measures, the output of the principal component analysis as well as curated forms of the data and time matrices.
+#'  of the selected measures, the output of the principal component analysis as well as
+#'  a curated form of the arguments.
+#'  
 #'@importFrom psych principal
 #'@importFrom stats cor
 #'
-#'@details In the presence of highly correlated (Pearson correlation >0.98) measures, the function selects the highest-ranking measure on the list (see
-#'  \code{\link[traj2]{Step1Measures}}) and discards the others. Because the K-means algorithm is sensitive to outliers, measures which are quotients (i.e. 4, 7, 8, 15-17, 21-26) are prevented from taking extremely large or infinite values (due to division by 0). Nishiyama's improved Chebychev bound is used to determine extreme values for each measure, corresponding to a 0.3% probability threshold. Extreme valuesbeyond the threshold are set to the 0.3% probability threshold. Measures corresponding to quotients which turn out to be of the form 0/0 are set to 1. PCA is applied on the remaining measures using the \code{\link[psych]{principal}} function from the \code{psych} package.
-#'  
+#'@details In the presence of highly correlated measures (Pearson correlation > 0.98), 
+#'  the function selects the highest-ranking measure on the list (see
+#'  \code{\link[traj]{Step1Measures}}) and discards the others. Because the
+#'  K-means algorithm is sensitive to outliers, measures which are quotients
+#'  (i.e. 4, 7, 8, 15-17, 21-26) are prevented from taking extremely large or
+#'  infinite values (caused by division by 0). Nishiyama's improved Chebychev bound
+#'  is used to determine extreme values for each measure, corresponding to a
+#'  0.3% probability threshold. Extreme values beyond the threshold are capped to
+#'  the 0.3% probability threshold. Measures corresponding to quotients which
+#'  would be of the form 0/0 are set to 1. PCA is applied on the remaining
+#'  measures using the \code{\link[psych]{principal}} function from the
+#'  \code{psych} package.
+#'
 #'@references Leffondre K, Abrahamowicz M, Regeasse A, Hawker GA, Badley EM,
-#'McCusker J, Belzile E. Statistical measures were proposed for identifying
-#'longitudinal patterns of change in quantitative health indicators. J Clin
-#'Epidemiol. 2004 Oct;57(10):1049-62. doi: 10.1016/j.jclinepi.2004.02.012. PMID:
-#'15528056. 
+#'  McCusker J, Belzile E. Statistical measures were proposed for identifying
+#'  longitudinal patterns of change in quantitative health indicators. J Clin
+#'  Epidemiol. 2004 Oct;57(10):1049-62. doi: 10.1016/j.jclinepi.2004.02.012.
+#'  PMID: 15528056.
 #'
 #' @examples
 #' \dontrun{
-#'data = example.data$data
-#'
-#'m = Step1Measures(data, ID=TRUE)
+#'m = Step1Measures(trajdata, ID = TRUE)
 #'s = Step2Selection(m)
 #'
-#'s$loadings
+#'s$RC$loadings
 #'
-#'s2 = Step2Selection(m,select=c(10,12,8,4))
+#'s2 = Step2Selection(m, select = c(10, 12, 8, 4))
 #'}
 #'
 #'
-#'@seealso \code{\link[psych]{principal}} \code{\link[traj2]{Step1Measures}}
+#'@seealso \code{\link[psych]{principal}} \code{\link[traj]{Step1Measures}}
 #'
 #'@rdname Step2Selection
 #'
@@ -158,20 +176,21 @@ Step2Selection <- function (trajMeasures, num.select = NULL, discard = NULL, sel
       RC <- NULL
     }
     
-    trajSelection = structure(list(selection = output, PC = PC, RC = RC, correlations = corr.vars, colinear.variables = colinear.variables, measures = trajMeasures$measures, data = trajMeasures$data, time = trajMeasures$time, input = input), class = "trajSelection")
+    trajSelection = structure(list(selection = output, PC = PC, RC = RC, colinear.variables = colinear.variables, measures = trajMeasures$measures, data = trajMeasures$data, time = trajMeasures$time, input = input), class = "trajSelection")
   }
   
   return(trajSelection)
   
 }
 
-
+#'@rdname Step2Selection
+#'
 #'@export
 print.trajSelection <- function(trajSelection){
-  print(paste(trajSelection$correlations[, 1], "was discarded because it is perfectly or almost perfectly correlated with", trajSelection$correlations[, 2]))
+  print(paste(trajSelection$correlations[, 1], " was discarded because it is perfectly or almost perfectly correlated with ", trajSelection$correlations[, 2], ".", sep = ""))
   cat("\n")
   
-  cat(paste("The selected measures are ", paste(colnames(trajSelection$selection)[-1], collapse = ', ', sep=""),".", sep=""))
+  cat(paste("In decreasing order of variance explained, the selected measures are ", paste(colnames(trajSelection$selection)[-1], collapse = ', ', sep=""),".", sep=""))
   cat("\n")
   
   if(!is.null(trajSelection$RC)){
@@ -179,6 +198,8 @@ print.trajSelection <- function(trajSelection){
   }
 }
 
+#'@rdname Step2Selection
+#'
 #'@export
 summary.trajSelection <- function(trajSelection){
   
@@ -187,17 +208,17 @@ summary.trajSelection <- function(trajSelection){
   } else{
       if(!is.null(trajSelection$input$num.select)){
         if(!is.null(trajSelection$colinear.variables)){
-          dropped <- unique(trajSelection$colinear.variables[,1])
-          cat(paste("The measures ", paste(dropped,collapse=", "), " were discarded because they were perfectly or almost perfectly correlated with another measure. Upon forming the principal components from the remaining measures, the ", trajSelection$input$num.select, " factors that held the most variance were retained. Together, they explained ", round(100*sum(trajSelection$PC$values[1:(length(colnames(trajSelection$selection))-1)])/length(trajSelection$PC$values),1) ,"% of the total variance. A varimax rotation was performed to maximize the correlation with the original measures without affecting the proportion of explained variance. For each rotated factor, the measure that had the highest correlation (loading) with it was selected. As a result of this procedure, the selected measures are ", paste(colnames(trajSelection$selection)[-1], collapse = ', ', sep=""),". Use print() to see more detailed informations.", sep=""))
+          dropped <- unique(trajSelection$colinear.variables[, 1])
+          cat(paste("The measures ", paste(dropped, collapse = ", "), " were discarded because they were perfectly or almost perfectly correlated with another measure. Upon forming the principal components from the remaining measures, the ", trajSelection$input$num.select, " factors that held the most variance were retained. Together, they explained ", round(100*sum(trajSelection$PC$values[1:(length(colnames(trajSelection$selection)) - 1)])/length(trajSelection$PC$values), 1) ,"% of the total variance. A varimax rotation was performed to maximize the correlation with the original measures without affecting the proportion of explained variance. For each rotated factor, the measure that had the highest correlation (loading) with it was selected. As a result of this procedure, the selected measures are, in decreasing order of variance explained, ", paste(colnames(trajSelection$selection)[-1], collapse = ', ', sep = ""),". Use print() to see more detailed informations.", sep = ""))
         } else{
-          cat(paste("Upon forming the principal components from the measures, the ", trajSelection$input$num.select, " factors that held the most variance were retained. Together, they explained ", round(100*sum(trajSelection$PC$values[1:(length(colnames(trajSelection$selection))-1)])/length(trajSelection$PC$values),1) ,"% of the total variance. A varimax rotation was performed to maximize the correlation with the original measures without affecting the proportion of explained variance. For each rotated factor, the measure that had the highest correlation (loading) with it was selected. As a result of this procedure, the selected measures are ", paste(colnames(trajSelection$selection)[-1], collapse = ', ', sep=""),". Use print() to see more detailed informations.", sep=""))
+          cat(paste("Upon forming the principal components from the measures, the ", trajSelection$input$num.select, " factors that held the most variance were retained. Together, they explained ", round(100*sum(trajSelection$PC$values[1:(length(colnames(trajSelection$selection)) - 1)])/length(trajSelection$PC$values), 1) ,"% of the total variance. A varimax rotation was performed to maximize the correlation with the original measures without affecting the proportion of explained variance. For each rotated factor, the measure that had the highest correlation (loading) with it was selected. As a result of this procedure, the selected measures are, in decreasing order of variance explained, ", paste(colnames(trajSelection$selection)[-1], collapse = ', ', sep = ""),". Use print() to see more detailed informations.", sep = ""))
         }
       } else{
         if(!is.null(trajSelection$colinear.variables)){
-          dropped <- unique(trajSelection$colinear.variables[,1])
-          cat(paste("The measures ", paste(dropped,collapse=", "), " were discarded because they were perfectly or almost perfectly correlated with another measure. Upon forming the principal components from the remaining measures, ", length(colnames(trajSelection$selection))-1, " of them had a variance greater than any one of the normalized measures. Together, they explained ", round(100*sum(trajSelection$PC$values[1:(length(colnames(trajSelection$selection))-1)])/length(trajSelection$PC$values),1) ,"% of the total variance. A varimax rotation was performed to maximize the correlation with the original measures without affecting the proportion of explained variance. For each rotated factor, the measure that had the highest correlation (loading) with it was selected. As a result of this procedure, the selected measures are ", paste(colnames(trajSelection$selection)[-1], collapse = ', ', sep=""),". Use print() to see more detailed informations.", sep=""))
+          dropped <- unique(trajSelection$colinear.variables[, 1])
+          cat(paste("The measures ", paste(dropped, collapse = ", "), " were discarded because they were perfectly or almost perfectly correlated with another measure. Upon forming the principal components from the remaining measures, ", length(colnames(trajSelection$selection)) - 1, " of them had a variance greater than any one of the normalized measures. Together, they explained ", round(100*sum(trajSelection$PC$values[1:(length(colnames(trajSelection$selection)) - 1)])/length(trajSelection$PC$values), 1) ,"% of the total variance. A varimax rotation was performed to maximize the correlation with the original measures without affecting the proportion of explained variance. For each rotated factor, the measure that had the highest correlation (loading) with it was selected. As a result of this procedure, the selected measures are, in decreasing order of variance explained, ", paste(colnames(trajSelection$selection)[-1], collapse = ', ', sep = ""),". Use print() to see more detailed informations.", sep = ""))
         } else{
-          cat(paste("Upon forming the principal components from the measures, ", length(colnames(trajSelection$selection))-1, " of them had a variance greater than any one of the normalized measures. Together, they explained ", round(100*sum(trajSelection$PC$values[1:(length(colnames(trajSelection$selection))-1)])/length(trajSelection$PC$values),1) ,"% of the total variance. A varimax rotation was performed to maximize the correlation with the original measures without affecting the proportion of explained variance. For each rotated factor, the measure that had the highest correlation (loading) with it was selected. As a result of this procedure, the selected measures are ", paste(colnames(trajSelection$selection)[-1], collapse = ', ', sep=""),". Use print() to see more detailed informations.", sep=""))
+          cat(paste("Upon forming the principal components from the measures, ", length(colnames(trajSelection$selection)) - 1, " of them had a variance greater than any one of the normalized measures. Together, they explained ", round(100*sum(trajSelection$PC$values[1:(length(colnames(trajSelection$selection)) - 1)])/length(trajSelection$PC$values), 1) ,"% of the total variance. A varimax rotation was performed to maximize the correlation with the original measures without affecting the proportion of explained variance. For each rotated factor, the measure that had the highest correlation (loading) with it was selected. As a result of this procedure, the selected measures are, in decreasing order of variance explained, ", paste(colnames(trajSelection$selection)[-1], collapse = ', ', sep = ""),". Use print() to see more detailed informations.", sep = ""))
         }
       }
   }

@@ -2,13 +2,15 @@
 % Please edit documentation in R/Step3Clusters.R
 \name{Step3Clusters}
 \alias{Step3Clusters}
+\alias{print.trajClusters}
+\alias{summary.trajClusters}
 \title{Classify the Longitudinal Data Based on the Selected Measures.}
 \usage{
 Step3Clusters(
   trajSelection,
+  nclusters = NULL,
   nstart = 50,
   iter.max = 20,
-  nclusters = NULL,
   K.max = 8,
   B = 500,
   d.power = 2,
@@ -16,20 +18,24 @@ Step3Clusters(
   method = "Tibs2001SEmax",
   SE.factor = 1
 )
+
+\method{print}{trajClusters}(trajClusters)
+
+\method{summary}{trajClusters}(trajClusters)
 }
 \arguments{
-\item{trajSelection}{Object of class \code{trajSelection} as returned by
+\item{trajSelection}{lbject of class \code{trajSelection} as returned by
 \code{Step2Selection}.}
 
-\item{nstart}{to be passed to the nstart argument of
-\code{\link[stats]{kmeans}}.}
-
-\item{iter.max}{to be passed to the iter.max argument of
-\code{\link[stats]{kmeans}}.}
-
-\item{nclusters}{either NULL or the number of clusters to form. If NULL, the
-number of clusters to form will be determined using the GAP criterion as
+\item{nclusters}{either NULL or the desired number of clusters. If NULL, the
+number of clustersis determined using the GAP criterion as
 implemented in the \code{\link[cluster]{clusGap}} function.}
+
+\item{nstart}{to be passed to the \code{nstart} argument of
+\code{\link[stats]{kmeans}}.}
+
+\item{iter.max}{to be passed to the \code{iter.max} argument of
+\code{\link[stats]{kmeans}}.}
 
 \item{K.max}{to be passed to the \code{K.max} argument of
 \code{\link[cluster]{clusGap}}.}
@@ -51,7 +57,7 @@ implemented in the \code{\link[cluster]{clusGap}} function.}
 }
 \value{
 An object of class \code{trajClusters}; a list containing the result
-of the clustering as well as curated forms of the data and time matrices.
+of the clustering, the output of the \code{clusGap} function, as well as a curated form of the arguments.
 }
 \description{
 Classifies the trajectories by applying the K-mean clustering
@@ -59,18 +65,17 @@ algorithm to the measures selected by \code{Step2Selection}.
 }
 \examples{
 \dontrun{
-data = example.data$data
 
-m = Step1Measures(data, ID=TRUE)
+m = Step1Measures(trajdata, ID = TRUE)
 s = Step2Selection(m)
 
-s$loadings
+s$RC$loadings
 
-s2 = Step2Selection(m,select=c(10,12,8,4))
+s2 = Step2Selection(m, select = c(10, 12, 8, 4))
 
-groups3Cl <- step3(s2,nclusters=3)$partition
-groups4Cl <- step3(s2,nclusters=4)$partition
-groups5Cl <- step3(s2,nclusters=5)$partition
+c3.part <- Step3Clusters(s2, nclusters = 3)$partition
+c4.part <- Step3Clusters(s2, nclusters = 4)$partition
+c5.part <- Step3Clusters(s2, nclusters = 5)$partition
 
 }
 

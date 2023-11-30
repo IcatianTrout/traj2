@@ -2,47 +2,57 @@
 % Please edit documentation in R/Step1Measures.R
 \name{Step1Measures}
 \alias{Step1Measures}
+\alias{print.trajMeasures}
+\alias{summary.trajMeasures}
 \title{Compute Measures for Identifying Patterns of Change in Longitudinal
 Data}
 \usage{
 Step1Measures(Data, Time = NULL, ID = FALSE, measures = 1:23, midpoint = NULL)
+
+\method{print}{trajMeasures}(trajMeasures)
+
+\method{summary}{trajMeasures}(trajMeasures)
 }
 \arguments{
-\item{Data}{A matrix or data frame in which each row contains the longitudinal
+\item{Data}{a matrix or data frame in which each row contains the longitudinal
 data (trajectories).}
 
-\item{Time}{Either NULL or a vector or a matrix (or data frame) of the same
-dimension as \code{Data}. If a vector, matrix or data frame is supplied, it
-is assumed that the entries are the times of the corresponding cells in
+\item{Time}{either NULL, a vector or a matrix/data frame of the same dimension
+as \code{Data}. If a vector, matrix or data frame is supplied, its entries
+are assumed to be measured at the times of the corresponding cells in
 \code{Data}. When set to \code{NULL} (the default), the times are assumed
 equidistant.}
 
-\item{ID}{Logical. Set to \code{TRUE} if the first column of \code{Data} and
-\code{Time} corresponds to an \code{ID} variable. Defaults to \code{FALSE}.}
+\item{ID}{logical. Set to \code{TRUE} if the first columns of \code{Data} and
+\code{Time} corresponds to an \code{ID} variable identifying the
+trajectories. Defaults to \code{FALSE}.}
 
-\item{measures}{A numerical vector containing the numerical identifiers of the
-measures to compute (see "Details" section below). The default, c(1:23),
-leaves out the measures which require specifying a midpoint.}
+\item{measures}{a vector containing the numerical identifiers of the measures
+to compute (see "Details" section below). The default, 1:23, corresponds to
+measures 1-23 and thus excludes the measures which require specifying a
+midpoint.}
 
-\item{midpoint}{Specifies which column of \code{Time} to use as the midpoint
-in measures 24-26. Can be an integer, an integer vector (of length the
-number of rows in \code{Time}) or NULL (the default). If NULL, the midpoint
-for a given trajectory is taken to be the time closest to the median.}
+\item{midpoint}{specifies which column of \code{Time} to use as the midpoint
+in measures 24-26. Can be NULL, an integer or a vector of integers of length
+the number of rows in \code{Time}. The default is NULL, in which case the
+midpoint is the time closest to the median of the Time vector specific to
+each trajectory.}
 }
 \value{
 An object of class \code{trajMeasures}; a list containing the values
 of the measures, a table of the outliers which have been capped, as well as
-a curated form of the \code{Data} and \code{Time} arguments.
+a curated form of the function's arguments.
 }
 \description{
 \code{Step1Measures} computes up to 26 measures for each
-longitudinal trajectory See details for the list of measures.
+longitudinal trajectory. See Details for the list of measures.
 }
 \details{
 Each trajectory must have a minimum of 3 observations otherwise it
 will be omitted from the analysis.
 
-The 26 measures (and their numerical identifiers) are:
+The 26 measures and their numerical identifiers are listed below. Please
+refer to the vignette for the specific formulas used to compute them.
 \enumerate{
 \item  Range\cr
 \item  Mean of the function\cr
@@ -74,12 +84,10 @@ The 26 measures (and their numerical identifiers) are:
 }
 \examples{
 \dontrun{
-data = example.data$data
+m1 = Step1Measures(trajdata, ID = TRUE, measures = 24:26, midpoint = NULL)
+m2 = Step1Measures(trajdata, ID = TRUE, measures = 24:26, midpoint = 3)
 
-m1 = Step1Measures(data, ID=TRUE, measures=24:26, midpoint=NULL)
-m2 = Step1Measures(data, ID=TRUE, measures=24:26, midpoint=as.integer(3))
-
-identical(s1$measures,s2$measures)
+identical(s1$measures, s2$measures)
 }
 
 }

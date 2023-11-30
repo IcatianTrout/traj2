@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# traj2
+# traj
 
 <!-- badges: start -->
 
@@ -10,7 +10,7 @@ status](https://travis-ci.com/IcatianTrout/traj2.svg?branch=main)](https://travi
 [![R-CMD-check](https://github.com/IcatianTrout/traj2/workflows/R-CMD-check/badge.svg)](https://github.com/IcatianTrout/traj2/actions)
 <!-- badges: end -->
 
-The goal of traj2 is to implements the three-step procedure proposed by
+The goal of traj is to implements the three-step procedure proposed by
 Leffondree et al. (2004) to identify clusters of individual longitudinal
 trajectories. The procedure involves (1) calculating a number of
 measures of change capturing various features of the trajectories; (2)
@@ -20,7 +20,7 @@ clusters of trajectories.
 
 ## Installation
 
-You can install the development version of traj2 from
+You can install the development version of traj from
 [GitHub](https://github.com/) with:
 
 ``` r
@@ -33,7 +33,7 @@ devtools::install_github("IcatianTrout/traj2")
 This is a basic example which shows you how to solve a common problem:
 
 ``` r
-#library(traj2)
+#library(traj)
 #data = trajdata
 
 #mes = step1measures(data, ID=TRUE)

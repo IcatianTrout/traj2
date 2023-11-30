@@ -1,15 +1,17 @@
 #'@title Classify the Longitudinal Data Based on the Selected Measures.
+#'
 #'@description Classifies the trajectories by applying the K-mean clustering
 #'  algorithm to the measures selected by \code{Step2Selection}.
-#'@param trajSelection Object of class \code{trajSelection} as returned by
+#'  
+#'@param trajSelection lbject of class \code{trajSelection} as returned by
 #'  \code{Step2Selection}.
-#'@param nstart to be passed to the nstart argument of
-#'  \code{\link[stats]{kmeans}}.
-#'@param iter.max to be passed to the iter.max argument of
-#'  \code{\link[stats]{kmeans}}.
-#'@param nclusters either NULL or the number of clusters to form. If NULL, the
-#'  number of clusters to form will be determined using the GAP criterion as
+#'@param nclusters either NULL or the desired number of clusters. If NULL, the
+#'  number of clustersis determined using the GAP criterion as
 #'  implemented in the \code{\link[cluster]{clusGap}} function.
+#'@param nstart to be passed to the \code{nstart} argument of
+#'  \code{\link[stats]{kmeans}}.
+#'@param iter.max to be passed to the \code{iter.max} argument of
+#'  \code{\link[stats]{kmeans}}.
 #'@param K.max to be passed to the \code{K.max} argument of
 #'  \code{\link[cluster]{clusGap}}.
 #'@param B to be passed to the \code{SE.factor} argument of
@@ -22,36 +24,35 @@
 #'  \code{\link[cluster]{clusGap}}.
 #'@param SE.factor to be passed to the \code{SE.factor} argument of
 #'  \code{\link[cluster]{clusGap}}.
+#'  
 #'@return An object of class \code{trajClusters}; a list containing the result
-#'  of the clustering as well as curated forms of the data and time matrices.
+#'  of the clustering, the output of the \code{clusGap} function, as well as a curated form of the arguments.
+#'  
 #'@import cluster
-#'@importFrom stats kmeans na.omit
-#'@importFrom grDevices palette.colors
-#'@importFrom graphics legend lines par
+#'@importFrom stats kmeans na.omit qt quantile
 #'
 #' @examples
 #' \dontrun{
-#'data = example.data$data
 #'
-#'m = Step1Measures(data, ID=TRUE)
+#'m = Step1Measures(trajdata, ID = TRUE)
 #'s = Step2Selection(m)
 #'
-#'s$loadings
+#'s$RC$loadings
 #'
-#'s2 = Step2Selection(m,select=c(10,12,8,4))
+#'s2 = Step2Selection(m, select = c(10, 12, 8, 4))
 #'
-#'groups3Cl <- step3(s2,nclusters=3)$partition
-#'groups4Cl <- step3(s2,nclusters=4)$partition
-#'groups5Cl <- step3(s2,nclusters=5)$partition
+#'c3.part <- Step3Clusters(s2, nclusters = 3)$partition
+#'c4.part <- Step3Clusters(s2, nclusters = 4)$partition
+#'c5.part <- Step3Clusters(s2, nclusters = 5)$partition
 #'
 #'}
 #'
-#'@seealso \code{\link[traj2]{Step2Selection}}
+#'@seealso \code{\link[traj]{Step2Selection}}
 #'
 #'@rdname Step3Clusters
 #'
 #'@export
-Step3Clusters <- function (trajSelection, nstart = 50, iter.max = 20, nclusters = NULL, K.max = 8, B = 500, d.power = 2, spaceH0 = "scaledPCA", method = "Tibs2001SEmax", SE.factor = 1){
+Step3Clusters <- function (trajSelection, nclusters = NULL, nstart = 50, iter.max = 20, K.max = 8, B = 500, d.power = 2, spaceH0 = "scaledPCA", method = "Tibs2001SEmax", SE.factor = 1){
   
   nclusters.input <- nclusters
   
@@ -60,7 +61,7 @@ Step3Clusters <- function (trajSelection, nstart = 50, iter.max = 20, nclusters 
   #standardize the measures to be clustered:
   
   data <-
-    data.frame(apply(data.frame(trajSelection$selection[,-1]), 2, scale))
+    data.frame(apply(data.frame(trajSelection$selection[, -1]), 2, scale))
   
   if (!is.null(nclusters) && (nclusters > nrow(data))) {
     stop(
@@ -103,7 +104,6 @@ Step3Clusters <- function (trajSelection, nstart = 50, iter.max = 20, nclusters 
         nstart = nstart
       )
     partition <- cluster.est2$cluster
-    partition.summary <- summary(factor(partition))
   } else {
     GAP <- NULL
     cluster.est2 <-
@@ -114,8 +114,25 @@ Step3Clusters <- function (trajSelection, nstart = 50, iter.max = 20, nclusters 
         nstart = nstart
       )
     partition <- cluster.est2$cluster
-    partition.summary <- summary(factor(partition))
   }
+  
+  #relabel the groups from largest to smallest
+  
+  decr.order <- rev(order(summary(factor(partition))))
+  
+  w <- list()
+  for(g in 1:nclusters){
+    w[[g]] <- which(partition == g)
+  }
+  
+  for(g in 1:nclusters){
+  partition[w[[g]]] <- decr.order[g]
+  }
+  
+  partition.summary <- summary(factor(partition))
+  
+  clust.by.id <- as.data.frame(cbind(trajSelection$data[, 1], partition))
+  colnames(clust.by.id) <- c("ID", "Cluster")
   
   trajClusters <-
     structure(
@@ -125,8 +142,7 @@ Step3Clusters <- function (trajSelection, nstart = 50, iter.max = 20, nclusters 
         selection = trajSelection$selection,
         GAP = GAP,
         nclusters = nclusters,
-        nclusters.input = nclusters.input,
-        partition = partition,
+        partition = clust.by.id,
         partition.summary = partition.summary
       ),
       class = "trajClusters"
@@ -136,125 +152,73 @@ Step3Clusters <- function (trajSelection, nstart = 50, iter.max = 20, nclusters 
   
 } 
 
+#'@rdname Step3Clusters
+#'
 #'@export
 print.trajClusters <- function(trajClusters){
   
-  cat(paste("The trajectories were grouped in ", trajClusters$nclusters, " clusters labeled ", paste(names(trajClusters$partition.summary), collapse = ", ", sep = ""), " of respective size ", paste(trajClusters$partition.summary, collapse=", ", sep = ""), ". The exact clustering is as follows.\n\n", sep=""))
+  cat(paste("The trajectories were grouped in ", trajClusters$nclusters, " clusters labeled ", paste(names(trajClusters$partition.summary), collapse = ", ", sep = ""), " of respective size ", paste(trajClusters$partition.summary, collapse = ", ", sep = ""), ". The exact clustering is as follows.\n\n", sep = ""))
   
-  clust.by.id <- cbind(trajClusters$data[, 1],trajClusters$partition)
-  colnames(clust.by.id) <- c("ID", "Cluster")
-  print(clust.by.id)
+  print(trajClusters$partition, row.names = F)
 }
 
+#'@rdname Step3Clusters
+#'
 #'@export
 summary.trajClusters <- function(trajClusters) {
-  cat("Distribution among clusters:\n")
-  clust.dist <- data.frame(matrix(nrow = 2,ncol = (trajClusters$nclusters + 1)))
-  clust.dist[1, ] <- signif(c(trajClusters$partition.summary, sum(trajClusters$partition.summary)))
-  clust.dist[2, ] <- signif(c(trajClusters$partition.summary/sum(trajClusters$partition.summary), sum(trajClusters$partition.summary)/sum(trajClusters$partition.summary)),2)
-  rownames(clust.dist) <- c("Absolute", "Relative")
-  colnames(clust.dist) <- c(1:trajClusters$nclusters,"Total")
-  print(clust.dist)
   
-  cat("\n")
   if (!is.null(trajClusters$GAP)) {
     gap.stat <- cbind(1:nrow(trajClusters$GAP$Tab), trajClusters$GAP$Tab[, 3:4])
     colnames(gap.stat) <- c("K", "GAP(K)", "SE")
     cat("GAP statistic as a function of the number of clusters:\n")
-    print(gap.stat)
-    }
-}
-
-#'@export
-plot.trajClusters <- function(trajClusters, sample.size = 5){
-  
-  # Plot the gap statistic
-  if(!is.null(trajClusters$GAP)){
-  plot(trajClusters$GAP, main="Gap statistic up to one SE")
+    print(as.data.frame(gap.stat), row.names = F)
   }
   
-  # Plot sample.size randomly sampled trajectories from each clusters
-  colors <- palette.colors(palette = "Okabe-Ito", alpha = 1)
+  cat("\n")
   
-  traj.by.clusters <- list()
-  for(k in 1:trajClusters$nclusters){
-    traj.by.clusters[[k]] <- trajClusters$data[which(trajClusters$partition == k), -c(1)]
+  cat("Cluster frequencies:\n")
+  clust.dist <- data.frame(matrix(nrow = 2, ncol = (trajClusters$nclusters + 1)))
+  clust.dist[1, ] <- signif(c(trajClusters$partition.summary, sum(trajClusters$partition.summary)))
+  clust.dist[2, ] <- signif(c(trajClusters$partition.summary/sum(trajClusters$partition.summary), sum(trajClusters$partition.summary)/sum(trajClusters$partition.summary)), 2)
+  rownames(clust.dist) <- c("Absolute", "Relative")
+  colnames(clust.dist) <- c(1:trajClusters$nclusters, "Total")
+  print(clust.dist)
+  
+  cat("\n")
+  cat("Summary of selected measures by cluster:\n")
+  
+  Q1 <- function(x) {
+    return(quantile(x, probs = .25))
   }
   
-  time.by.clusters <- list()
-  for(k in 1:trajClusters$nclusters){
-    time.by.clusters[[k]] <- trajClusters$time[which(trajClusters$partition==k), -c(1)]
+  Q2 <- function(x) {
+    return(quantile(x, probs = .5))
   }
   
-  # Plot (max) sample.size random trajectories from each group
-  smpl.traj.by.clusters <- list()
-  smpl.time.by.clusters <- list()
-  
-  smpl.traj <- matrix(nrow = 0, ncol = ncol(trajClusters$data) - 1)
-  smpl.time <- matrix(nrow = 0, ncol = ncol(trajClusters$time) - 1)
-  
-  for(k in 1:trajClusters$nclusters){
-    size <- min(sample.size, nrow(traj.by.clusters[[k]]))
-    smpl <- sample(x = c(1:nrow(traj.by.clusters[[k]])), size = size, replace=FALSE)
-    smpl <- smpl[order(smpl)]
-    
-    smpl.traj.by.clusters[[k]] <- traj.by.clusters[[k]][smpl,]
-    smpl.time.by.clusters[[k]] <- time.by.clusters[[k]][smpl,]
-    
-    smpl.traj <- rbind(smpl.traj, smpl.traj.by.clusters[[k]])
-    smpl.time <- rbind(smpl.time, smpl.time.by.clusters[[k]])
-  }
-    
-  plot(x = 0, y = 0, xlim = c(min(smpl.time, na.rm = T), max(smpl.time, na.rm = T)), ylim = c(min(smpl.traj, na.rm = T), max(smpl.traj, na.rm = T)), type = "n", xlab = "", ylab = "", main = "Sample trajectories")
-  
-  for(k in 1:trajClusters$nclusters){
-    for(i in 1:size){
-      lines(x = na.omit(smpl.time.by.clusters[[k]][i, ]), y = na.omit(smpl.traj.by.clusters[[k]][i, ]), type = "l", col = colors[k])
-    }
-    legend("topright",col=colors[1:k], legend=paste(1:3)[1:k], lty=rep(1,k))
+  Q3 <- function(x) {
+    return(quantile(x, probs = .75))
   }
   
-  
-  # Plot dispersion plots of the selected measures
-  if(ncol(trajClusters$selection) > 2){
+  for (i in 1:trajClusters$nclusters) {
+    measures.summary <- data.frame(matrix(nrow = 6, ncol = ncol(trajClusters$selection) - 1))
+    rownames(measures.summary) <- c("Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max.")
+    colnames(measures.summary) <- colnames(trajClusters$selection)[-1]
     
-    selection <- trajClusters$selection[, -c(1)]
+    which.i <- which(trajClusters$partition[, 2] == i)
     
-    selection.by.clusters <- list()
-    for(k in 1:trajClusters$nclusters){
-      selection.by.clusters[[k]] <- selection[which(trajClusters$partition == k), ]
-    }
-  
-    nb.measures <- ncol(selection) 
-  
-    for(m in 1:nb.measures){
-      
-      X <- sqrt(nb.measures - 1)
-      
-      if(X - floor(X)==0){
-        par(mfrow = c(X,X))
-      }
-      
-      if((X - floor(X) > 0) & (X - floor(X) < 0.5)){
-        par(mfrow = c(X,X+1))
-      }
-      
-      if(X - floor(X) >= 0.5){
-        par(mfrow = c(X+1,X+1))
-      }
-      
-      for(n in 1:(nb.measures - 1)){
-        
-        plot(x = 0, y = 0, xlim = c(min(selection[, m]), max(selection[, m])), ylim = c(min(selection[,-c(m)][, n]), max(selection[,-c(m)][, n])), type = "n", xlab = paste(colnames(selection[m])), ylab = paste(colnames(selection[,-c(m)])[n]), main = "")
-        
-        for(k in 1:trajClusters$nclusters){
-          
-          lines(x = selection.by.clusters[[k]][, m], y = selection.by.clusters[[k]][, -c(m)][, n], type = "p", pch = 20, col = colors[k], bg = colors[k])
-          
-          legend("topright", lty=rep(0,k), pch = rep(16,k), col=colors[1:k], legend=paste(1:3)[1:k])
-        }
-      }
-    }
+    selection.cluster.i <- trajClusters$selection[which.i, ]
+    
+    measures.summary[1, ] <- apply(selection.cluster.i, 2, min)[-1]
+    measures.summary[2, ] <- apply(selection.cluster.i, 2, Q1)[-1]
+    measures.summary[3, ] <- apply(selection.cluster.i, 2, Q2)[-1]
+    measures.summary[4, ] <- apply(selection.cluster.i, 2, mean)[-1]
+    measures.summary[5, ] <- apply(selection.cluster.i, 2, Q3)[-1]
+    measures.summary[6, ] <- apply(selection.cluster.i, 2, max)[-1]
+    
+    cat(paste("Cluster ", i, " (size ", trajClusters$partition.summary[i], "):", sep = ""))
+    cat("\n")
+    print(measures.summary)
+    cat("\n")
   }
 }
 

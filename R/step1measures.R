@@ -1,30 +1,38 @@
 #'@title Compute Measures for Identifying Patterns of Change in Longitudinal
 #'  Data
+#'
 #'@description \code{Step1Measures} computes up to 26 measures for each
-#'  longitudinal trajectory See details for the list of measures.
-#'@param Data A matrix or data frame in which each row contains the longitudinal
+#'  longitudinal trajectory. See Details for the list of measures.
+#'
+#'@param Data a matrix or data frame in which each row contains the longitudinal
 #'  data (trajectories).
-#'@param Time Either NULL or a vector or a matrix (or data frame) of the same
-#'  dimension as \code{Data}. If a vector, matrix or data frame is supplied, it
-#'  is assumed that the entries are the times of the corresponding cells in
+#'@param Time either NULL, a vector or a matrix/data frame of the same dimension
+#'  as \code{Data}. If a vector, matrix or data frame is supplied, its entries
+#'  are assumed to be measured at the times of the corresponding cells in
 #'  \code{Data}. When set to \code{NULL} (the default), the times are assumed
 #'  equidistant.
-#'@param ID Logical. Set to \code{TRUE} if the first column of \code{Data} and
-#'  \code{Time} corresponds to an \code{ID} variable. Defaults to \code{FALSE}.
-#'@param measures A numerical vector containing the numerical identifiers of the
-#'  measures to compute (see "Details" section below). The default, c(1:23),
-#'  leaves out the measures which require specifying a midpoint.
-#'@param midpoint Specifies which column of \code{Time} to use as the midpoint
-#'  in measures 24-26. Can be an integer, an integer vector (of length the
-#'  number of rows in \code{Time}) or NULL (the default). If NULL, the midpoint
-#'  for a given trajectory is taken to be the time closest to the median.
+#'@param ID logical. Set to \code{TRUE} if the first columns of \code{Data} and
+#'  \code{Time} corresponds to an \code{ID} variable identifying the
+#'  trajectories. Defaults to \code{FALSE}.
+#'@param measures a vector containing the numerical identifiers of the measures
+#'  to compute (see "Details" section below). The default, 1:23, corresponds to
+#'  measures 1-23 and thus excludes the measures which require specifying a
+#'  midpoint.
+#'@param midpoint specifies which column of \code{Time} to use as the midpoint
+#'  in measures 24-26. Can be NULL, an integer or a vector of integers of length
+#'  the number of rows in \code{Time}. The default is NULL, in which case the
+#'  midpoint is the time closest to the median of the Time vector specific to
+#'  each trajectory.
+#'
 #'@return An object of class \code{trajMeasures}; a list containing the values
 #'  of the measures, a table of the outliers which have been capped, as well as
-#'  a curated form of the \code{Data} and \code{Time} arguments.
+#'  a curated form of the function's arguments.
+#'  
 #'@details Each trajectory must have a minimum of 3 observations otherwise it
 #'  will be omitted from the analysis.
 #'
-#'  The 26 measures (and their numerical identifiers) are:
+#'  The 26 measures and their numerical identifiers are listed below. Please
+#'  refer to the vignette for the specific formulas used to compute them.
 #'\enumerate{
 #'\item  Range\cr
 #'\item  Mean of the function\cr
@@ -68,12 +76,10 @@
 #'
 #'@examples
 #'\dontrun{
-#'data = example.data$data
+#'m1 = Step1Measures(trajdata, ID = TRUE, measures = 24:26, midpoint = NULL)
+#'m2 = Step1Measures(trajdata, ID = TRUE, measures = 24:26, midpoint = 3)
 #'
-#'m1 = Step1Measures(data, ID=TRUE, measures=24:26, midpoint=NULL)
-#'m2 = Step1Measures(data, ID=TRUE, measures=24:26, midpoint=as.integer(3))
-#'
-#'identical(s1$measures,s2$measures)
+#'identical(s1$measures, s2$measures)
 #'}
 #'
 #'@rdname Step1Measures
@@ -131,10 +137,10 @@ Step1Measures <- function (Data, Time = NULL, ID = FALSE, measures = 1:23, midpo
       if (length(w) < 3) {
         data2 <- data2[-i, ] 
         time2 <- time2[-i, ]
-        warning(paste("Row ",i," of Data contains less than 3 observations; it has been removed.", sep = ""))
+        warning(paste("Row ", i, " of Data contains less than 3 observations; it has been removed.", sep = ""))
         IDvector <- IDvector[-i]
       } else if(!identical(w, c(1:length(w)))){
-        stop(paste("Row ",i," of Data is not formatted correctly. Rows should be of the form X Y ... Z NA ... NA.", sep = ""))
+        stop(paste("Row ", i, " of Data is not formatted correctly. Rows should be of the form X Y ... Z NA ... NA.", sep = ""))
         }
     }
     data <- data2
@@ -234,8 +240,8 @@ Step1Measures <- function (Data, Time = NULL, ID = FALSE, measures = 1:23, midpo
         IDvector <- IDvector[-flag]
         
       }
-    } else if ( !(is.vector(midpoint) & is.integer(midpoint))) { 
-        stop("'midpoint' should be either NULL, an integer or an integer vector.")
+    } else if (!is.vector(midpoint)) { 
+        stop("'midpoint' should be either NULL or an integer/vector of integers corresponding to a column of Time.")
     } else{
         if (length(midpoint) == nrow(data)) {
           mid.position <- midpoint
@@ -599,7 +605,8 @@ Step1Measures <- function (Data, Time = NULL, ID = FALSE, measures = 1:23, midpo
  
 }
 
-
+#'@rdname Step1Measures
+#'
 #'@export
 print.trajMeasures <- function(trajMeasures){
   cat("Measures and time at midpoint (if applicable):\n")
@@ -610,35 +617,36 @@ print.trajMeasures <- function(trajMeasures){
     measure.plus <- cbind(trajMeasures$measures$ID,trajMeasures$mid)
     measure.plus <- cbind(measure.plus,trajMeasures$measures[, -1])
     colnames(measure.plus)[1:2] <- c("ID", "mid time")
-    print(measure.plus)
+    print(measure.plus, row.names = F)
   }
 }
 
-
+#'@rdname Step1Measures
+#'
 #'@export
 summary.trajMeasures <- function(trajMeasures){
   cat("Description of the measures:\n\n")
   cat("m1: Range\n")
-  cat("m2: Mean of the function\n")
-  cat("m3: Functional standard deviation (SD)\n")
+  cat("m2: Mean of the trajectory\n")
+  cat("m3: Standard deviation (SD)\n")
   cat("m4: Coefficient of variation (m3/m2)\n")
   cat("m5: Overall change (initial value - final value)\n")
   cat("m6: Mean change per unit time\n")
   cat("m7: Overall change relative to initial value\n")
-  cat("m8: Overall change relative to functional mean (m5/m2)\n")
+  cat("m8: Overall change relative to mean (m5/m2)\n")
   cat("m9: Slope of the linear model\n")
   cat("m10: Proportion of variance explained by the linear model (R squared)\n")
   cat("m11: Maximum value of the speed\n")
   cat("m12: Functional SD of the speed\n")
   cat("m13: Mean absolute speed\n")
   cat("m14: Maximum absolute speed\n")
-  cat("m15: Maximum absolute speed relative to the functional mean (m14/m2)\n")
+  cat("m15: Maximum absolute speed relative to the mean (m14/m2)\n")
   cat("m16: Maximum absolute speed relative to the slope (m14/m9)\n")
   cat("m17: Functional SD of the speed relative to the slope (m12/m9)\n")
   cat("m18: Mean acceleration\n")
   cat("m19: Mean absolute acceleration\n")
   cat("m20: Maximum of the absolute acceleration\n")
-  cat("m21: Maximum of the absolute acceleration relative to the functional (m20/m2)\n")
+  cat("m21: Maximum of the absolute acceleration relative to the mean (m20/m2)\n")
   cat("m22: Maximum of the absolute acceleration relative to the mean absolute speed (m20/m13)\n")
   cat("m23: Mean absolute acceleration relative to the mean absolute speed (m19/m13)\n")
   cat("m24: Early change relative to later change\n")
@@ -665,12 +673,12 @@ summary.trajMeasures <- function(trajMeasures){
   rownames(measures.summary) <- c("Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max.")
   colnames(measures.summary) <- colnames(trajMeasures$measures)[-1]
   
-  measures.summary[1, ] <- apply(trajMeasures$measures[, -1], 2, min)
-  measures.summary[2, ] <- apply(trajMeasures$measures[, -1], 2, Q1)
-  measures.summary[3, ] <- apply(trajMeasures$measures[, -1], 2, Q2)
-  measures.summary[4, ] <- apply(trajMeasures$measures[, -1], 2, mean)
-  measures.summary[5, ] <- apply(trajMeasures$measures[, -1], 2, Q3)
-  measures.summary[6, ] <- apply(trajMeasures$measures[, -1], 2, max)
+  measures.summary[1, ] <- apply(trajMeasures$measures, 2, min)[-1]
+  measures.summary[2, ] <- apply(trajMeasures$measures, 2, Q1)[-1]
+  measures.summary[3, ] <- apply(trajMeasures$measures, 2, Q2)[-1]
+  measures.summary[4, ] <- apply(trajMeasures$measures, 2, mean)[-1]
+  measures.summary[5, ] <- apply(trajMeasures$measures, 2, Q3)[-1]
+  measures.summary[6, ] <- apply(trajMeasures$measures, 2, max)[-1]
   
   print(measures.summary)
   cat("\n")
@@ -679,11 +687,11 @@ summary.trajMeasures <- function(trajMeasures){
   outliers <- trajMeasures$outliers
   outliers.pre <- outliers
   outliers.pre[is.na(outliers.pre)] <- ""
-  print(outliers.pre) 
+  print(outliers.pre, row.names = F) 
   
   cat("Outliers after capping:\n")
   if (nrow(outliers)==0) {
-    print(outliers) 
+    print(outliers, row.names = F) 
   } else{
     outliers.post <- outliers
     for (j in 1:nrow(outliers)) {
@@ -694,7 +702,7 @@ summary.trajMeasures <- function(trajMeasures){
       }
     }
     outliers.post[is.na(outliers.post)] <- ""
-    print(outliers.post) 
+    print(outliers.post, row.names = F) 
   }
   
 
