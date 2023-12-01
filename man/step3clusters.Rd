@@ -19,9 +19,9 @@ Step3Clusters(
   SE.factor = 1
 )
 
-\method{print}{trajClusters}(trajClusters)
+\method{print}{trajClusters}(x, ...)
 
-\method{summary}{trajClusters}(trajClusters)
+\method{summary}{trajClusters}(object, ...)
 }
 \arguments{
 \item{trajSelection}{object of class \code{trajSelection} as returned by

@@ -24,6 +24,8 @@
 #'  \code{\link[cluster]{clusGap}}.
 #'@param SE.factor to be passed to the \code{SE.factor} argument of
 #'  \code{\link[cluster]{clusGap}}.
+#'@param x object of class trajClusters
+#'@param object object of class trajClusters
 #'
 #'@return An object of class \code{trajClusters}; a list containing the result
 #'  of the clustering, the output of the \code{clusGap} function, as well as a
@@ -166,20 +168,20 @@ Step3Clusters <-
 #'@rdname Step3Clusters
 #'
 #'@export
-print.trajClusters <- function(trajClusters) {
+print.trajClusters <- function(x, ...) {
   cat(
     paste(
       "The trajectories were grouped in ",
-      trajClusters$nclusters,
+      x$nclusters,
       " clusters labeled ",
       paste(
-        names(trajClusters$partition.summary),
+        names(x$partition.summary),
         collapse = ", ",
         sep = ""
       ),
       " of respective size ",
       paste(
-        trajClusters$partition.summary,
+        x$partition.summary,
         collapse = ", ",
         sep = ""
       ),
@@ -188,16 +190,16 @@ print.trajClusters <- function(trajClusters) {
     )
   )
   
-  print(trajClusters$partition, row.names = FALSE)
+  print(x$partition, row.names = FALSE)
 }
 
 #'@rdname Step3Clusters
 #'
 #'@export
-summary.trajClusters <- function(trajClusters) {
-  if (!is.null(trajClusters$GAP)) {
+summary.trajClusters <- function(object, ...) {
+  if (!is.null(object$GAP)) {
     gap.stat <-
-      cbind(seq_len(nrow(trajClusters$GAP$Tab)), trajClusters$GAP$Tab[, 3:4])
+      cbind(seq_len(nrow(object$GAP$Tab)), object$GAP$Tab[, 3:4])
     colnames(gap.stat) <- c("K", "GAP(K)", "SE")
     cat("GAP statistic as a function of the number of clusters:\n")
     print(as.data.frame(gap.stat), row.names = FALSE)
@@ -207,19 +209,19 @@ summary.trajClusters <- function(trajClusters) {
   
   cat("Cluster frequencies:\n")
   clust.dist <-
-    data.frame(matrix(nrow = 2, ncol = (trajClusters$nclusters + 1)))
+    data.frame(matrix(nrow = 2, ncol = (object$nclusters + 1)))
   clust.dist[1,] <-
     signif(c(
-      trajClusters$partition.summary,
-      sum(trajClusters$partition.summary)
+      object$partition.summary,
+      sum(object$partition.summary)
     ))
   clust.dist[2,] <-
     signif(c(
-      trajClusters$partition.summary / sum(trajClusters$partition.summary),
-      sum(trajClusters$partition.summary) / sum(trajClusters$partition.summary)
+      object$partition.summary / sum(object$partition.summary),
+      sum(object$partition.summary) / sum(object$partition.summary)
     ), 2)
   rownames(clust.dist) <- c("Absolute", "Relative")
-  colnames(clust.dist) <- c(1:trajClusters$nclusters, "Total")
+  colnames(clust.dist) <- c(1:object$nclusters, "Total")
   print(clust.dist)
   
   cat("\n")
@@ -237,20 +239,20 @@ summary.trajClusters <- function(trajClusters) {
     return(quantile(x, probs = .75))
   }
   
-  for (i in 1:trajClusters$nclusters) {
+  for (i in 1:object$nclusters) {
     measures.summary <-
       data.frame(matrix(
         nrow = 6,
-        ncol = ncol(trajClusters$selection) - 1
+        ncol = ncol(object$selection) - 1
       ))
     rownames(measures.summary) <-
       c("Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max.")
     colnames(measures.summary) <-
-      colnames(trajClusters$selection)[-1]
+      colnames(object$selection)[-1]
     
-    which.i <- which(trajClusters$partition[, 2] == i)
+    which.i <- which(object$partition[, 2] == i)
     
-    selection.cluster.i <- trajClusters$selection[which.i,]
+    selection.cluster.i <- object$selection[which.i,]
     
     measures.summary[1,] <- apply(selection.cluster.i, 2, min)[-1]
     measures.summary[2,] <- apply(selection.cluster.i, 2, Q1)[-1]
@@ -263,7 +265,7 @@ summary.trajClusters <- function(trajClusters) {
       "Cluster ",
       i,
       " (size ",
-      trajClusters$partition.summary[i],
+      object$partition.summary[i],
       "):",
       sep = ""
     ))

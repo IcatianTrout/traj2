@@ -4,18 +4,9 @@
 \alias{plot.trajClusters}
 \title{Plots \code{trajClusters} objects}
 \usage{
-\method{plot}{trajClusters}(
-  trajClusters,
-  sample.size = 5,
-  ask = TRUE,
-  which.plots = NULL,
-  spline = FALSE
-)
+\method{plot}{trajClusters}(x, sample.size = 5, ask = TRUE, which.plots = NULL, spline = FALSE, ...)
 }
 \arguments{
-\item{trajClusters}{object of class \code{trajClusters} as returned by
-\code{Step3Cluster}.}
-
 \item{sample.size}{the number of random trajectories to be randomly sampled
 from each cluster. Defaults to 5.}
 
@@ -29,6 +20,9 @@ plots will be displayed.}
 \item{spline}{logical. If TRUE, each trajectory will be smoothed using
 smoothing splines and the median and mean trajectories will be plotted from
 the smoothed trajectories. Defaults to FALSE.}
+
+\item{trajClusters}{object of class \code{trajClusters} as returned by
+\code{Step3Cluster}.}
 }
 \description{
 Up to 5 kinds of plots are currently available: a plot of the

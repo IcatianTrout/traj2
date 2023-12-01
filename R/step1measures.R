@@ -23,6 +23,8 @@
 #'  the number of rows in \code{Time}. The default is NULL, in which case the
 #'  midpoint is the time closest to the median of the Time vector specific to
 #'  each trajectory.
+#'@param x object of class trajMeasures
+#'@param object object of class trajMeasures
 #'
 #'@return An object of class \code{trajMeasures}; a list containing the values
 #'  of the measures, a table of the outliers which have been capped, as well as
@@ -729,14 +731,14 @@ Step1Measures <-
 #'@rdname Step1Measures
 #'
 #'@export
-print.trajMeasures <- function(trajMeasures) {
+print.trajMeasures <- function(x, ...) {
   cat("Measures and time at midpoint (if applicable):\n")
   
-  if (is.null(trajMeasures$mid)) {
-    print(trajMeasures$measures)
+  if (is.null(x$mid)) {
+    print(x$measures)
   } else{
-    measure.plus <- cbind(trajMeasures$measures$ID, trajMeasures$mid)
-    measure.plus <- cbind(measure.plus, trajMeasures$measures[,-1])
+    measure.plus <- cbind(x$measures$ID, x$mid)
+    measure.plus <- cbind(measure.plus, x$measures[,-1])
     colnames(measure.plus)[1:2] <- c("ID", "mid time")
     print(measure.plus, row.names = FALSE)
   }
@@ -745,7 +747,7 @@ print.trajMeasures <- function(trajMeasures) {
 #'@rdname Step1Measures
 #'
 #'@export
-summary.trajMeasures <- function(trajMeasures) {
+summary.trajMeasures <- function(object, ...) {
   cat("Description of the measures:\n\n")
   cat("m1: Range\n")
   cat("m2: Mean of the trajectory\n")
@@ -793,23 +795,23 @@ summary.trajMeasures <- function(trajMeasures) {
   }
   
   measures.summary <-
-    data.frame(matrix(nrow = 6, ncol = ncol(trajMeasures$measures) - 1))
+    data.frame(matrix(nrow = 6, ncol = ncol(object$measures) - 1))
   rownames(measures.summary) <-
     c("Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max.")
-  colnames(measures.summary) <- colnames(trajMeasures$measures)[-1]
+  colnames(measures.summary) <- colnames(object$measures)[-1]
   
-  measures.summary[1,] <- apply(trajMeasures$measures, 2, min)[-1]
-  measures.summary[2,] <- apply(trajMeasures$measures, 2, Q1)[-1]
-  measures.summary[3,] <- apply(trajMeasures$measures, 2, Q2)[-1]
-  measures.summary[4,] <- apply(trajMeasures$measures, 2, mean)[-1]
-  measures.summary[5,] <- apply(trajMeasures$measures, 2, Q3)[-1]
-  measures.summary[6,] <- apply(trajMeasures$measures, 2, max)[-1]
+  measures.summary[1,] <- apply(object$measures, 2, min)[-1]
+  measures.summary[2,] <- apply(object$measures, 2, Q1)[-1]
+  measures.summary[3,] <- apply(object$measures, 2, Q2)[-1]
+  measures.summary[4,] <- apply(object$measures, 2, mean)[-1]
+  measures.summary[5,] <- apply(object$measures, 2, Q3)[-1]
+  measures.summary[6,] <- apply(object$measures, 2, max)[-1]
   
   print(measures.summary)
   cat("\n")
   
   cat("Outliers before capping:\n")
-  outliers <- trajMeasures$outliers
+  outliers <- object$outliers
   outliers.pre <- outliers
   outliers.pre[is.na(outliers.pre)] <- ""
   print(outliers.pre, row.names = FALSE)
@@ -823,7 +825,7 @@ summary.trajMeasures <- function(trajMeasures) {
       for (k in 2:ncol(outliers)) {
         if (is.na(outliers[j, k]) == FALSE) {
           outliers.post[j, k] <-
-            signif(trajMeasures$measures[trajMeasures$measures$ID == outliers$ID[j], colnames(outliers)[k]], 3)
+            signif(object$measures[object$measures$ID == outliers$ID[j], colnames(outliers)[k]], 3)
         }
       }
     }

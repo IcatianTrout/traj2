@@ -49,11 +49,11 @@
 #'
 #'@export
 plot.trajClusters <-
-  function(trajClusters,
+  function(x,
            sample.size = 5,
            ask = TRUE,
            which.plots = NULL,
-           spline = FALSE) {
+           spline = FALSE, ...) {
     if (!is.null(which.plots) &
         (!is.numeric(which.plots) | !is.vector(which.plots))) {
       stop(
@@ -78,25 +78,25 @@ plot.trajClusters <-
     
     gap.condition <-
       ((is.null(which.plots) |
-          (1 %in% which.plots)) & !is.null(trajClusters$GAP))
+          (1 %in% which.plots)) & !is.null(x$GAP))
     if (gap.condition) {
-      if (!is.null(trajClusters$GAP)) {
+      if (!is.null(x$GAP)) {
         par(mfrow = c(1, 1))
-        plot(trajClusters$GAP, main = "Gap statistic up to one SE")
+        plot(x$GAP, main = "Gap statistic up to one SE")
       }
     }
     
-    if (!is.null(trajClusters$GAP)) {
+    if (!is.null(x$GAP)) {
       plot.counter <- plot.counter + 1
     }
     
     
     ### Mean and median traj ###
-    universal.time <- trajClusters$time[1,-1]
+    universal.time <- x$time[1,-1]
     is.different <- c()
-    for (i in seq_len(nrow(trajClusters$time))) {
+    for (i in seq_len(nrow(x$time))) {
       is.different[i] <-
-        !identical(trajClusters$time[i,-1], universal.time)
+        !identical(x$time[i,-1], universal.time)
     }
     homogeneous.times <- (sum(is.different) == 0)
     
@@ -115,8 +115,8 @@ plot.trajClusters <-
       }
       
       if (spline == TRUE) {
-        data <- trajClusters$data[,-1]
-        time <- trajClusters$time[,-1]
+        data <- x$data[,-1]
+        time <- x$time[,-1]
         
         a <- min(time, na.rm = TRUE)
         b <- max(time, na.rm = TRUE)
@@ -156,13 +156,13 @@ plot.trajClusters <-
           
         }
         
-        time.new <- cbind(trajClusters$time[, "ID"], time.new)
-        data.new <- cbind(trajClusters$data[, "ID"], data.new)
+        time.new <- cbind(x$time[, "ID"], time.new)
+        data.new <- cbind(x$data[, "ID"], data.new)
         
       }
       
       # Set up the most compact grid depending on the number of clusters
-      X <- sqrt(trajClusters$nclusters)
+      X <- sqrt(x$nclusters)
       
       int.X <- floor(X)
       frac.X <- X - int.X
@@ -202,13 +202,13 @@ plot.trajClusters <-
       CI.high <- list()
       
       
-      for (j in 1:trajClusters$nclusters) {
-        which.j <- which(trajClusters$partition[, 2] == j)
+      for (j in 1:x$nclusters) {
+        which.j <- which(x$partition[, 2] == j)
         
         if (spline == TRUE) {
           data.cluster.j <- data.new[which.j,-1]
         } else{
-          data.cluster.j <- trajClusters$data[which.j,-1]
+          data.cluster.j <- x$data[which.j,-1]
         }
         
         col.keep <-
@@ -281,12 +281,12 @@ plot.trajClusters <-
         )
         legend(
           "topright",
-          col = color.pal[1:trajClusters$nclusters],
-          legend = paste(1:trajClusters$nclusters),
-          lty = rep(1, trajClusters$nclusters)
+          col = color.pal[1:x$nclusters],
+          legend = paste(1:x$nclusters),
+          lty = rep(1, x$nclusters)
         )
         
-        for (j in 1:trajClusters$nclusters) {
+        for (j in 1:x$nclusters) {
           lines(
             x = time.for.plots[[j]],
             y = median.traj[[j]],
@@ -300,7 +300,7 @@ plot.trajClusters <-
       if (2 %in% which.med.mean) {
         par(mfrow = good.grid)
         
-        for (j in 1:trajClusters$nclusters) {
+        for (j in 1:x$nclusters) {
           plot(
             x = time.for.plots[[j]],
             y = median.traj[[j]],
@@ -309,7 +309,7 @@ plot.trajClusters <-
               "Cluster ",
               j,
               " (n = ",
-              trajClusters$partition.summary[j],
+              x$partition.summary[j],
               ")",
               sep = ""
             ),
@@ -336,13 +336,13 @@ plot.trajClusters <-
         )
         legend(
           "topright",
-          col = color.pal[1:trajClusters$nclusters],
-          legend = paste(1:trajClusters$nclusters),
-          lty = rep(1, trajClusters$nclusters)
+          col = color.pal[1:x$nclusters],
+          legend = paste(1:x$nclusters),
+          lty = rep(1, x$nclusters)
         )
         
         
-        for (j in 1:trajClusters$nclusters) {
+        for (j in 1:x$nclusters) {
           lines(
             x = time.for.plots[[j]],
             y = mean.traj[[j]],
@@ -356,7 +356,7 @@ plot.trajClusters <-
       if (4 %in% which.med.mean) {
         par(mfrow = good.grid)
         
-        for (j in 1:trajClusters$nclusters) {
+        for (j in 1:x$nclusters) {
           plot(
             x = 0,
             y = 0,
@@ -370,7 +370,7 @@ plot.trajClusters <-
               "Cluster ",
               j,
               " (n = ",
-              trajClusters$partition.summary[j],
+              x$partition.summary[j],
               ")",
               sep = ""
             ),
@@ -424,15 +424,15 @@ plot.trajClusters <-
     
     if (random.condition) {
       traj.by.clusters <- list()
-      for (k in 1:trajClusters$nclusters) {
+      for (k in 1:x$nclusters) {
         traj.by.clusters[[k]] <-
-          trajClusters$data[which(trajClusters$partition[, 2] == k),-c(1)]
+          x$data[which(x$partition[, 2] == k),-c(1)]
       }
       
       time.by.clusters <- list()
-      for (k in 1:trajClusters$nclusters) {
+      for (k in 1:x$nclusters) {
         time.by.clusters[[k]] <-
-          trajClusters$time[which(trajClusters$partition[, 2] == k),-c(1)]
+          x$time[which(x$partition[, 2] == k),-c(1)]
       }
       
       # Plot (max) sample.size random trajectories from each group
@@ -440,11 +440,11 @@ plot.trajClusters <-
       smpl.time.by.clusters <- list()
       
       smpl.traj <-
-        matrix(nrow = 0, ncol = ncol(trajClusters$data) - 1)
+        matrix(nrow = 0, ncol = ncol(x$data) - 1)
       smpl.time <-
-        matrix(nrow = 0, ncol = ncol(trajClusters$time) - 1)
+        matrix(nrow = 0, ncol = ncol(x$time) - 1)
       
-      for (k in 1:trajClusters$nclusters) {
+      for (k in 1:x$nclusters) {
         size <- min(sample.size, nrow(traj.by.clusters[[k]]))
         smpl <-
           sample(x = seq_len(nrow(traj.by.clusters[[k]])),
@@ -472,8 +472,8 @@ plot.trajClusters <-
         main = "Sample trajectories"
       )
       
-      for (k in 1:trajClusters$nclusters) {
-        for (i in 1:min(size, trajClusters$partition.summary[k])) {
+      for (k in 1:x$nclusters) {
+        for (i in 1:min(size, x$partition.summary[k])) {
           lines(
             x = na.omit(smpl.time.by.clusters[[k]][i,]),
             y = na.omit(smpl.traj.by.clusters[[k]][i,]),
@@ -494,7 +494,7 @@ plot.trajClusters <-
     
     
     ### Scatter plots of the selected measures ###
-    nb.measures <- ncol(trajClusters$selection) - 1
+    nb.measures <- ncol(x$selection) - 1
     scatter.condition <-
       (nb.measures > 1) &
       (is.null(which.plots) |
@@ -509,12 +509,12 @@ plot.trajClusters <-
           which(c((plot.counter + 1):(plot.counter + nb.measures)) %in% which.plots)
       }
       
-      selection <- trajClusters$selection[,-c(1)]
+      selection <- x$selection[,-c(1)]
       
       selection.by.clusters <- list()
-      for (k in 1:trajClusters$nclusters) {
+      for (k in 1:x$nclusters) {
         selection.by.clusters[[k]] <-
-          selection[which(trajClusters$partition[, 2] == k),]
+          selection[which(x$partition[, 2] == k),]
       }
       
       # Set up the most compact grid depending on the number of selected measures
@@ -557,7 +557,7 @@ plot.trajClusters <-
             )
           )
           
-          for (k in 1:trajClusters$nclusters) {
+          for (k in 1:x$nclusters) {
             lines(
               x = selection.by.clusters[[k]][, m],
               y = selection.by.clusters[[k]][,-c(m)][, n],

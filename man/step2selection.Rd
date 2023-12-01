@@ -8,9 +8,9 @@
 \usage{
 Step2Selection(trajMeasures, num.select = NULL, discard = NULL, select = NULL)
 
-\method{print}{trajSelection}(trajSelection)
+\method{print}{trajSelection}(x, ...)
 
-\method{summary}{trajSelection}(trajSelection)
+\method{summary}{trajSelection}(object, ...)
 }
 \arguments{
 \item{trajMeasures}{object of class \code{trajMeasures} as returned by

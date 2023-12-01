@@ -9,9 +9,9 @@ Data}
 \usage{
 Step1Measures(Data, Time = NULL, ID = FALSE, measures = 1:23, midpoint = NULL)
 
-\method{print}{trajMeasures}(trajMeasures)
+\method{print}{trajMeasures}(x, ...)
 
-\method{summary}{trajMeasures}(trajMeasures)
+\method{summary}{trajMeasures}(object, ...)
 }
 \arguments{
 \item{Data}{a matrix or data frame in which each row contains the longitudinal
