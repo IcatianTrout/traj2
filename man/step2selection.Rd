@@ -14,7 +14,7 @@ Step2Selection(trajMeasures, num.select = NULL, discard = NULL, select = NULL)
 }
 \arguments{
 \item{trajMeasures}{object of class \code{trajMeasures} as returned by
-\code{\link[traj2]{Step1Measures}}.}
+\code{\link[traj]{Step1Measures}}.}
 
 \item{num.select}{an optional positive integer indicating the number of
 factors to keep in the second stage of the algorithm. Defaults to NULL so
@@ -23,7 +23,7 @@ measures are selected.}
 
 \item{discard}{an optional vector of positive integers corresponding to the
 measures to be dropped from the analysis. See
-\code{\link[traj2]{Step1Measures}} for the list of measures. Defaults to
+\code{\link[traj]{Step1Measures}} for the list of measures. Defaults to
 NULL.}
 
 \item{select}{an optional vector of positive integers corresponding to the
@@ -38,12 +38,12 @@ corresponding measures are selected instead.}
 }
 \value{
 An object of class \code{trajSelection}; a list containing the values
-of the selected measures, the output of the principal component analysis as well as
-a curated form of the arguments.
+of the selected measures, the output of the principal component analysis as
+well as a curated form of the arguments.
 }
 \description{
 This function applies the following dimension reduction algorithm
-to the measures computed by \code{\link[traj2]{Step1Measures}}:
+to the measures computed by \code{\link[traj]{Step1Measures}}:
 \enumerate{
 \item Use principal component analysis (PCA) on the measure to form factors summarizing the variability in the measures;
 \item Drop the factors whose variance is smaller than any one of the normalized measures;
@@ -53,15 +53,15 @@ to the measures computed by \code{\link[traj2]{Step1Measures}}:
 }
 }
 \details{
-In the presence of highly correlated measures (Pearson correlation > 0.98),
-the function selects the highest-ranking measure on the list (see
-\code{\link[traj2]{Step1Measures}}) and discards the others. Because the
+In the presence of highly correlated measures (Pearson correlation >
+0.98), the function selects the highest-ranking measure on the list (see
+\code{\link[traj]{Step1Measures}}) and discards the others. Because the
 K-means algorithm is sensitive to outliers, measures which are quotients
 (i.e. 4, 7, 8, 15-17, 21-26) are prevented from taking extremely large or
-infinite values (caused by division by 0). Nishiyama's improved Chebychev bound
-is used to determine extreme values for each measure, corresponding to a
-0.3\% probability threshold. Extreme values beyond the threshold are capped to
-the 0.3\% probability threshold. Measures corresponding to quotients which
+infinite values (caused by division by 0). Nishiyama's improved Chebychev
+bound is used to determine extreme values for each measure, corresponding to
+a 0.3\% probability threshold. Extreme values beyond the threshold are capped
+to the 0.3\% probability threshold. Measures corresponding to quotients which
 would be of the form 0/0 are set to 1. PCA is applied on the remaining
 measures using the \code{\link[psych]{principal}} function from the
 \code{psych} package.
@@ -86,5 +86,5 @@ Epidemiol. 2004 Oct;57(10):1049-62. doi: 10.1016/j.jclinepi.2004.02.012.
 PMID: 15528056.
 }
 \seealso{
-\code{\link[psych]{principal}} \code{\link[traj2]{Step1Measures}}
+\code{\link[psych]{principal}} \code{\link[traj]{Step1Measures}}
 }

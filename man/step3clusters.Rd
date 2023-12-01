@@ -24,12 +24,12 @@ Step3Clusters(
 \method{summary}{trajClusters}(trajClusters)
 }
 \arguments{
-\item{trajSelection}{lbject of class \code{trajSelection} as returned by
+\item{trajSelection}{object of class \code{trajSelection} as returned by
 \code{Step2Selection}.}
 
 \item{nclusters}{either NULL or the desired number of clusters. If NULL, the
-number of clustersis determined using the GAP criterion as
-implemented in the \code{\link[cluster]{clusGap}} function.}
+number of clustersis determined using the GAP criterion as implemented in
+the \code{\link[cluster]{clusGap}} function.}
 
 \item{nstart}{to be passed to the \code{nstart} argument of
 \code{\link[stats]{kmeans}}.}
@@ -57,7 +57,8 @@ implemented in the \code{\link[cluster]{clusGap}} function.}
 }
 \value{
 An object of class \code{trajClusters}; a list containing the result
-of the clustering, the output of the \code{clusGap} function, as well as a curated form of the arguments.
+of the clustering, the output of the \code{clusGap} function, as well as a
+curated form of the arguments.
 }
 \description{
 Classifies the trajectories by applying the K-mean clustering
@@ -81,5 +82,5 @@ c5.part <- Step3Clusters(s2, nclusters = 5)$partition
 
 }
 \seealso{
-\code{\link[traj2]{Step2Selection}}
+\code{\link[traj]{Step2Selection}}
 }

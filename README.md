@@ -20,7 +20,7 @@ clusters of trajectories.
 
 ## Installation
 
-You can install the development version of traj from
+You can install the development version of traj2 from
 [GitHub](https://github.com/) with:
 
 ``` r
@@ -33,7 +33,7 @@ devtools::install_github("IcatianTrout/traj2")
 This is a basic example which shows you how to solve a common problem:
 
 ``` r
-#library(traj)
+#library(traj2)
 #data = trajdata
 
 #mes = step1measures(data, ID=TRUE)

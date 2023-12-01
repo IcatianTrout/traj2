@@ -34,9 +34,9 @@ the smoothed trajectories. Defaults to FALSE.}
 Up to 5 kinds of plots are currently available: a plot of the
 cluster-specific median and mean trajectories, a random sample of
 trajectories from each cluster and scatter plots of the measures on which
-the clustering was based. When the GAP criterion was used in \code{Step3Clusters}
-to determine the optimal number of clusters, a plot of the GAP statistic as
-a function of the number of clusters is provided.
+the clustering was based. When the GAP criterion was used in
+\code{Step3Clusters} to determine the optimal number of clusters, a plot of
+the GAP statistic as a function of the number of clusters is provided.
 }
 \examples{
 \dontrun{
@@ -58,5 +58,5 @@ plot(c4, which.plots = 3:4)
 
 }
 \seealso{
-\code{\link[traj2]{Step3Clusters}}
+\code{\link[traj]{Step3Clusters}}
 }

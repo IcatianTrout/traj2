@@ -13,14 +13,14 @@ knitr::opts_chunk$set(
 )
 ```
 
-# traj2
+# traj
 
 <!-- badges: start -->
 [![Travis build status](https://travis-ci.com/IcatianTrout/traj2.svg?branch=main)](https://travis-ci.com/IcatianTrout/traj2)
 [![R-CMD-check](https://github.com/IcatianTrout/traj2/workflows/R-CMD-check/badge.svg)](https://github.com/IcatianTrout/traj2/actions)
 <!-- badges: end -->
 
-The goal of traj2 is to implements the three-step procedure proposed by Leffondree et al. (2004) to identify clusters of individual longitudinal trajectories. The procedure involves (1) calculating a number of measures of change capturing various features of the trajectories; (2) using a PCA-based dimensionality reduction algorithm to select a subset of measures and (3) using the K-means clustering algorithm to identify clusters of trajectories.
+The goal of traj is to implements the three-step procedure proposed by Leffondree et al. (2004) to identify clusters of individual longitudinal trajectories. The procedure involves (1) calculating a number of measures of change capturing various features of the trajectories; (2) using a PCA-based dimensionality reduction algorithm to select a subset of measures and (3) using the K-means clustering algorithm to identify clusters of trajectories.
 
 ## Installation
 
